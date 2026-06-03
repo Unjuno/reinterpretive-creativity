@@ -64,6 +64,7 @@ python -m unittest discover -s tests
 
 ## 文書
 
+- [`docs/00_terms.md`](docs/00_terms.md): 用語定義
 - [`docs/01_scope.md`](docs/01_scope.md): 射程
 - [`docs/02_model.md`](docs/02_model.md): モデル定義
 - [`docs/03_simulation_design.md`](docs/03_simulation_design.md): シミュレーション設計
@@ -71,6 +72,7 @@ python -m unittest discover -s tests
 - [`docs/05_related_work.md`](docs/05_related_work.md): 関連研究
 - [`docs/06_hypothesis.md`](docs/06_hypothesis.md): 検証仮説
 - [`docs/07_roadmap.md`](docs/07_roadmap.md): ロードマップ
+- [`docs/08_ci_check.md`](docs/08_ci_check.md): CI確認用メモ
 
 ## CI
 
