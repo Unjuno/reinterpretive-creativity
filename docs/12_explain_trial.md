@@ -11,6 +11,7 @@
 - 初期モデルにどの不整合があるか
 - 各探索方法がどの辺を変えたか
 - 教師モデルとどの辺で異なるか
+- 高スコア候補がどの指標で高くなったか
 - 高スコア候補が本当に解釈しやすい構造か
 
 ## 実行例
@@ -42,8 +43,28 @@ python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100
 | ランダム探索 | 同じ候補数予算で広く探索した結果 |
 | 局所修復探索 | 初期モデル近傍を1辺ずつ改善した結果 |
 | 再解釈探索 | 現在の再解釈候補生成方式による結果 |
+| スコア内訳 | novelty、保存度、utility_proxy、utility構成要素 |
 | 初期モデルからの変更 | 初期理解からどの辺が変わったか |
 | 教師モデルとの差分 | 教師モデルとどの辺が異なるか |
+
+## スコア内訳
+
+各探索結果には、次の指標が出力されます。
+
+| 指標 | 意味 |
+|---|---|
+| novelty_distance | 教師モデルとの差分。大きいほど教師モデルと異なる |
+| preservation | 初期モデルの非矛盾情報をどれだけ保存したか |
+| utility_proxy | 構造的な有用性らしさの暫定 proxy |
+| density_score | 空構造と過密構造を下げる密度指標 |
+| node_coverage_score | 肯定辺が覆うノードの割合 |
+| weak_connectivity_score | 肯定辺の最大弱連結成分比率 |
+| in_out_coverage_score | 入辺・出辺を持つノードの広がり |
+| total_score | `novelty_distance * preservation * utility_proxy` |
+
+この内訳により、候補が高得点になった理由を分解できます。
+
+例えば、高スコアでも `preservation` が低ければ、初期理解をかなり捨てている可能性があります。逆に `preservation` が高くても `utility_proxy` が低ければ、誤った理解を保存しすぎている可能性があります。
 
 ## 注意
 
@@ -53,7 +74,7 @@ python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100
 
 このログで確認できるのは、あくまで次です。
 
-> ある人工ケースで、候補モデルがどの関係を保存し、どの関係を変えたか。
+> ある人工ケースで、候補モデルがどの関係を保存し、どの関係を変え、どのproxy指標によって高く評価されたか。
 
 ## 今後の改善案
 
@@ -61,8 +82,8 @@ python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100
 
 - 変更辺の数
 - 変更種別の集計
-- スコア構成要素の内訳
 - 近傍探索の改善過程
 - 複数ケースの代表例抽出
+- JSON形式の1ケース説明ログ
 
 ただし、初期MVPでは、説明ログは1ケースを読むための最小機能に留めます。
