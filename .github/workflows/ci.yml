@@ -18,8 +18,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run simulation
+      - name: Run demo simulation
         run: python scripts/simulate.py
+
+      - name: Run batch experiment
+        run: python scripts/run_experiments.py
 
       - name: Run tests
         run: python -m unittest discover -s tests
