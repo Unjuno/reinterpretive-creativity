@@ -15,7 +15,10 @@ from dataclasses import dataclass
 from random import Random
 from statistics import mean
 
-from scripts import simulate
+try:
+    from scripts import simulate
+except ModuleNotFoundError:  # `python scripts/run_experiments.py` 用
+    import simulate  # type: ignore[no-redef]
 
 
 @dataclass(frozen=True)
