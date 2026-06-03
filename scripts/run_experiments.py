@@ -2,7 +2,7 @@
 
 目的:
 - 固定デモだけでなく、複数 seed / 複数ノード数の人工モデルで傾向を見る。
-- 再解釈探索とランダム修復の平均スコアを比較する。
+- 再解釈探索を、単発ランダム修復と強めのランダム探索ベースラインの両方と比較する。
 - 結果を JSON / CSV に保存できるようにする。
 
 注意:
@@ -33,19 +33,24 @@ RawModel = dict[Edge, set[int]]
 class TrialResult:
     node_count: int
     seed: int
-    random_score: float
+    random_repair_score: float
+    random_search_score: float
     reinterpretation_score: float
-    improvement: float
+    improvement_vs_random_repair: float
+    improvement_vs_random_search: float
 
 
 @dataclass(frozen=True)
 class ExperimentSummary:
     node_count: int
     trials: int
-    random_mean: float
+    random_repair_mean: float
+    random_search_mean: float
     reinterpretation_mean: float
-    improvement_mean: float
-    win_rate: float
+    improvement_vs_random_repair_mean: float
+    improvement_vs_random_search_mean: float
+    win_rate_vs_random_repair: float
+    win_rate_vs_random_search: float
 
 
 def make_nodes(node_count: int) -> tuple[Node, ...]:
@@ -174,6 +179,34 @@ def sampled_candidates(
         yield candidate
 
 
+def random_candidates(
+    edges: tuple[Edge, ...],
+    seed: int,
+    candidate_limit: int,
+) -> Iterable[Model]:
+    """同じ候補数予算を使う強めのランダム探索ベースライン。"""
+
+    rng = Random(seed)
+    for _ in range(candidate_limit):
+        yield {edge: rng.choice((-1, 0, 1)) for edge in edges}
+
+
+def best_from_stream(stream: Iterable[Model], teacher: Model, raw: RawModel) -> tuple[float, Model]:
+    best_score = -1.0
+    best_model: Model | None = None
+    for candidate in stream:
+        if not differs(candidate, teacher):
+            continue
+        current = score(candidate, teacher, raw)
+        if current > best_score:
+            best_score = current
+            best_model = candidate
+
+    if best_model is None:
+        raise RuntimeError("候補モデルが見つかりません")
+    return best_score, best_model
+
+
 def reinterpretation_search(
     teacher: Model,
     raw: RawModel,
@@ -190,20 +223,22 @@ def reinterpretation_search(
             seed=seed + 100_000,
             candidate_limit=candidate_limit,
         )
+    return best_from_stream(stream, teacher, raw)
 
-    best_score = -1.0
-    best_model: Model | None = None
-    for candidate in stream:
-        if not differs(candidate, teacher):
-            continue
-        current = score(candidate, teacher, raw)
-        if current > best_score:
-            best_score = current
-            best_model = candidate
 
-    if best_model is None:
-        raise RuntimeError("候補モデルが見つかりません")
-    return best_score, best_model
+def random_search_baseline(
+    teacher: Model,
+    raw: RawModel,
+    seed: int,
+    candidate_limit: int,
+) -> tuple[float, Model]:
+    edges = tuple(teacher.keys())
+    stream = random_candidates(
+        edges,
+        seed=seed + 200_000,
+        candidate_limit=candidate_limit,
+    )
+    return best_from_stream(stream, teacher, raw)
 
 
 def random_repair(teacher: Model, raw: RawModel, seed: int) -> tuple[float, Model]:
@@ -220,7 +255,13 @@ def random_repair(teacher: Model, raw: RawModel, seed: int) -> tuple[float, Mode
 
 def run_trial(seed: int, node_count: int = 3, candidate_limit: int = 500) -> TrialResult:
     teacher, raw = noisy_case(seed=seed, node_count=node_count)
-    random_score, _ = random_repair(teacher, raw, seed=seed)
+    random_repair_score, _ = random_repair(teacher, raw, seed=seed)
+    random_search_score, _ = random_search_baseline(
+        teacher,
+        raw,
+        seed=seed,
+        candidate_limit=candidate_limit,
+    )
     reinterpretation_score, _ = reinterpretation_search(
         teacher,
         raw,
@@ -230,23 +271,37 @@ def run_trial(seed: int, node_count: int = 3, candidate_limit: int = 500) -> Tri
     return TrialResult(
         node_count=node_count,
         seed=seed,
-        random_score=random_score,
+        random_repair_score=random_repair_score,
+        random_search_score=random_search_score,
         reinterpretation_score=reinterpretation_score,
-        improvement=reinterpretation_score - random_score,
+        improvement_vs_random_repair=reinterpretation_score - random_repair_score,
+        improvement_vs_random_search=reinterpretation_score - random_search_score,
     )
 
 
 def summarize(node_count: int, results: list[TrialResult]) -> ExperimentSummary:
     if not results:
         raise ValueError("結果が空です")
-    wins = sum(1 for result in results if result.reinterpretation_score >= result.random_score)
+    wins_vs_random_repair = sum(
+        1 for result in results if result.reinterpretation_score >= result.random_repair_score
+    )
+    wins_vs_random_search = sum(
+        1 for result in results if result.reinterpretation_score >= result.random_search_score
+    )
     return ExperimentSummary(
         node_count=node_count,
         trials=len(results),
-        random_mean=mean(result.random_score for result in results),
+        random_repair_mean=mean(result.random_repair_score for result in results),
+        random_search_mean=mean(result.random_search_score for result in results),
         reinterpretation_mean=mean(result.reinterpretation_score for result in results),
-        improvement_mean=mean(result.improvement for result in results),
-        win_rate=wins / len(results),
+        improvement_vs_random_repair_mean=mean(
+            result.improvement_vs_random_repair for result in results
+        ),
+        improvement_vs_random_search_mean=mean(
+            result.improvement_vs_random_search for result in results
+        ),
+        win_rate_vs_random_repair=wins_vs_random_repair / len(results),
+        win_rate_vs_random_search=wins_vs_random_search / len(results),
     )
 
 
@@ -271,18 +326,21 @@ def run_suite(
 
 def format_summary(summaries: list[ExperimentSummary]) -> str:
     lines = [
-        "| ノード数 | 試行数 | ランダム平均 | 再解釈平均 | 平均改善量 | 勝率 |",
-        "|---:|---:|---:|---:|---:|---:|",
+        "| ノード数 | 試行数 | 単発ランダム平均 | ランダム探索平均 | 再解釈平均 | 改善量(単発) | 改善量(探索) | 勝率(単発) | 勝率(探索) |",
+        "|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for summary in summaries:
         lines.append(
             "| "
             f"{summary.node_count} | "
             f"{summary.trials} | "
-            f"{summary.random_mean:.4f} | "
+            f"{summary.random_repair_mean:.4f} | "
+            f"{summary.random_search_mean:.4f} | "
             f"{summary.reinterpretation_mean:.4f} | "
-            f"{summary.improvement_mean:.4f} | "
-            f"{summary.win_rate:.2%} |"
+            f"{summary.improvement_vs_random_repair_mean:.4f} | "
+            f"{summary.improvement_vs_random_search_mean:.4f} | "
+            f"{summary.win_rate_vs_random_repair:.2%} | "
+            f"{summary.win_rate_vs_random_search:.2%} |"
         )
     return "\n".join(lines)
 
@@ -304,9 +362,11 @@ def write_csv(path: Path, results: list[TrialResult]) -> None:
             fieldnames=[
                 "node_count",
                 "seed",
-                "random_score",
+                "random_repair_score",
+                "random_search_score",
                 "reinterpretation_score",
-                "improvement",
+                "improvement_vs_random_repair",
+                "improvement_vs_random_search",
             ],
         )
         writer.writeheader()
