@@ -95,7 +95,7 @@ python -m unittest discover -s tests
 - 初期モデルからの変更辺
 - 教師モデルとの差分
 
-これは説明補助であり、創造性の証明ではありません。
+これは説明補助であり、創造性の証明ではありません。読み方は [`docs/12_explain_trial.md`](docs/12_explain_trial.md) を参照してください。
 
 ## 文書
 
@@ -111,6 +111,7 @@ python -m unittest discover -s tests
 - [`docs/09_failure_analysis.md`](docs/09_failure_analysis.md): 失敗分析と集団分布
 - [`docs/10_utility_proxy.md`](docs/10_utility_proxy.md): utility_proxy 設計メモ
 - [`docs/11_search_strategy.md`](docs/11_search_strategy.md): 探索方針メモ
+- [`docs/12_explain_trial.md`](docs/12_explain_trial.md): 1ケース説明ログの読み方
 
 ## CI
 
