@@ -3,6 +3,7 @@
 目的:
 - 平均スコアだけでなく、1ケースで何が変わったかを見る。
 - 教師モデル、初期モデル、各探索結果、変更辺、スコア内訳をMarkdownで出力する。
+- 局所修復探索について、改善・摂動の過程をMarkdownで出力する。
 
 注意:
 - これは説明補助であり、創造性の証明ではない。
@@ -11,7 +12,9 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from pathlib import Path
+from random import Random
 
 try:
     from scripts import run_experiments
@@ -21,6 +24,21 @@ except ModuleNotFoundError:  # `python scripts/explain_trial.py` 用
 Model = run_experiments.Model
 RawModel = run_experiments.RawModel
 Edge = run_experiments.Edge
+
+
+@dataclass(frozen=True)
+class LocalRepairTraceStep:
+    """局所修復探索の1ステップ。"""
+
+    step: int
+    action: str
+    edge: Edge
+    old_value: int
+    new_value: int
+    previous_score: float
+    new_score: float
+    best_score: float
+    evaluated: int
 
 
 def edge_label(edge: Edge) -> str:
@@ -33,6 +51,16 @@ def value_label(value: int) -> str:
     if value == -1:
         return "否定"
     return "不明"
+
+
+def action_label(action: str) -> str:
+    if action == "improve":
+        return "改善"
+    if action == "perturb":
+        return "摂動"
+    if action == "initial_perturb":
+        return "初期摂動"
+    return action
 
 
 def raw_value_label(values: set[int] | None) -> str:
@@ -73,6 +101,13 @@ def changed_edges(before: Model, after: Model) -> list[tuple[Edge, int, int]]:
     ]
 
 
+def first_changed_edge(before: Model, after: Model) -> tuple[Edge, int, int]:
+    changes = changed_edges(before, after)
+    if not changes:
+        raise ValueError("変更された辺がありません")
+    return changes[0]
+
+
 def change_rows(before: Model, after: Model) -> list[str]:
     changes = changed_edges(before, after)
     if not changes:
@@ -104,6 +139,150 @@ def score_breakdown_rows(candidate: Model, teacher: Model, raw: RawModel) -> lis
     ]
 
 
+def local_repair_search_with_trace(
+    teacher: Model,
+    raw: RawModel,
+    seed: int,
+    candidate_limit: int,
+) -> tuple[float, Model, list[LocalRepairTraceStep]]:
+    """局所修復探索を説明用に再実行し、改善・摂動の過程を返す。"""
+
+    rng = Random(seed + 300_000)
+    edges = tuple(teacher.keys())
+    current = run_experiments.to_model(raw, edges)
+    trace: list[LocalRepairTraceStep] = []
+    step = 0
+
+    if not run_experiments.differs(current, teacher):
+        edge = rng.choice(edges)
+        old_value = current[edge]
+        current[edge] = 0 if current[edge] != 0 else 1
+        current_score = (
+            run_experiments.score(current, teacher, raw)
+            if run_experiments.differs(current, teacher)
+            else -1.0
+        )
+        step += 1
+        trace.append(
+            LocalRepairTraceStep(
+                step=step,
+                action="initial_perturb",
+                edge=edge,
+                old_value=old_value,
+                new_value=current[edge],
+                previous_score=-1.0,
+                new_score=current_score,
+                best_score=current_score,
+                evaluated=0,
+            )
+        )
+    else:
+        current_score = run_experiments.score(current, teacher, raw)
+
+    best_model = dict(current)
+    best_score = current_score
+    evaluated = 0
+
+    while evaluated < candidate_limit:
+        moved = False
+        best_neighbor: Model | None = None
+        best_neighbor_score = current_score
+        for candidate in run_experiments.neighbor_candidates(current, edges, rng):
+            if evaluated >= candidate_limit:
+                break
+            evaluated += 1
+            if not run_experiments.differs(candidate, teacher):
+                continue
+            candidate_score = run_experiments.score(candidate, teacher, raw)
+            if candidate_score > best_neighbor_score:
+                best_neighbor = candidate
+                best_neighbor_score = candidate_score
+            if candidate_score > best_score:
+                best_model = candidate
+                best_score = candidate_score
+
+        if best_neighbor is not None:
+            previous = current
+            previous_score = current_score
+            edge, old_value, new_value = first_changed_edge(previous, best_neighbor)
+            current = best_neighbor
+            current_score = best_neighbor_score
+            moved = True
+            step += 1
+            trace.append(
+                LocalRepairTraceStep(
+                    step=step,
+                    action="improve",
+                    edge=edge,
+                    old_value=old_value,
+                    new_value=new_value,
+                    previous_score=previous_score,
+                    new_score=current_score,
+                    best_score=best_score,
+                    evaluated=evaluated,
+                )
+            )
+
+        if not moved:
+            previous_score = current_score
+            current = dict(current)
+            edge = rng.choice(edges)
+            old_value = current[edge]
+            values = [-1, 0, 1]
+            values.remove(current[edge])
+            current[edge] = rng.choice(values)
+            current_score = (
+                run_experiments.score(current, teacher, raw)
+                if run_experiments.differs(current, teacher)
+                else -1.0
+            )
+            step += 1
+            trace.append(
+                LocalRepairTraceStep(
+                    step=step,
+                    action="perturb",
+                    edge=edge,
+                    old_value=old_value,
+                    new_value=current[edge],
+                    previous_score=previous_score,
+                    new_score=current_score,
+                    best_score=best_score,
+                    evaluated=evaluated,
+                )
+            )
+
+    return best_score, best_model, trace
+
+
+def trace_rows(trace: list[LocalRepairTraceStep]) -> list[str]:
+    if not trace:
+        return ["| _なし_ | _なし_ | _なし_ | _なし_ | _なし_ | _なし_ | _なし_ | _なし_ |"]
+    return [
+        "| "
+        f"{step.step} | "
+        f"{action_label(step.action)} | "
+        f"{step.evaluated} | "
+        f"`{edge_label(step.edge)}` | "
+        f"{value_label(step.old_value)} | "
+        f"{value_label(step.new_value)} | "
+        f"{step.previous_score:.4f} | "
+        f"{step.new_score:.4f} | "
+        f"{step.best_score:.4f} |"
+        for step in trace
+    ]
+
+
+def local_repair_trace_block(trace: list[LocalRepairTraceStep]) -> str:
+    lines = [
+        "#### 局所修復探索の改善過程",
+        "",
+        "| step | action | evaluated | 辺 | 変更前 | 変更後 | score_before | score_after | best_score |",
+        "|---:|---|---:|---|---|---|---:|---:|---:|",
+        *trace_rows(trace),
+    ]
+    return "\n".join(lines)
+
+
 def result_block(
     title: str,
     score: float,
@@ -111,6 +290,7 @@ def result_block(
     teacher: Model,
     raw: RawModel,
     result: Model,
+    extra_sections: list[str] | None = None,
 ) -> str:
     lines = [
         f"### {title}",
@@ -141,6 +321,8 @@ def result_block(
         "|---|---|---|",
         *change_rows(teacher, result),
     ]
+    if extra_sections:
+        lines.extend(["", *extra_sections])
     return "\n".join(lines)
 
 
@@ -154,7 +336,7 @@ def explain_case(seed: int, node_count: int, candidate_limit: int) -> str:
     random_search_score, random_search_model = run_experiments.random_search_baseline(
         teacher, raw, seed=seed, candidate_limit=candidate_limit
     )
-    local_repair_score, local_repair_model = run_experiments.local_repair_search(
+    local_repair_score, local_repair_model, local_repair_trace = local_repair_search_with_trace(
         teacher, raw, seed=seed, candidate_limit=candidate_limit
     )
     reinterpretation_score, reinterpretation_model = run_experiments.reinterpretation_search(
@@ -188,13 +370,21 @@ def explain_case(seed: int, node_count: int, candidate_limit: int) -> str:
         "",
         result_block("ランダム探索", random_search_score, initial, teacher, raw, random_search_model),
         "",
-        result_block("局所修復探索", local_repair_score, initial, teacher, raw, local_repair_model),
+        result_block(
+            "局所修復探索",
+            local_repair_score,
+            initial,
+            teacher,
+            raw,
+            local_repair_model,
+            extra_sections=[local_repair_trace_block(local_repair_trace)],
+        ),
         "",
         result_block("再解釈探索", reinterpretation_score, initial, teacher, raw, reinterpretation_model),
         "",
         "## 注意",
         "",
-        "このログは、候補モデルの変更内容とスコア構成要素を読むための説明補助です。",
+        "このログは、候補モデルの変更内容、スコア構成要素、局所修復探索の改善過程を読むための説明補助です。",
         "創造性そのものを証明するものではありません。",
     ]
     return "\n".join(lines) + "\n"
