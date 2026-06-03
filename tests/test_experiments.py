@@ -14,7 +14,8 @@ class TestExperiments(unittest.TestCase):
     def test_trial_result_is_valid(self):
         result = run_experiments.run_trial(0, node_count=3)
         self.assertEqual(result.node_count, 3)
-        self.assertGreaterEqual(result.random_score, 0.0)
+        self.assertGreaterEqual(result.random_repair_score, 0.0)
+        self.assertGreaterEqual(result.random_search_score, 0.0)
         self.assertGreaterEqual(result.reinterpretation_score, 0.0)
 
     def test_summary_is_valid(self):
@@ -22,13 +23,22 @@ class TestExperiments(unittest.TestCase):
         summary = run_experiments.summarize(3, results)
         self.assertEqual(summary.node_count, 3)
         self.assertEqual(summary.trials, 5)
-        self.assertGreaterEqual(summary.win_rate, 0.0)
-        self.assertLessEqual(summary.win_rate, 1.0)
+        self.assertGreaterEqual(summary.win_rate_vs_random_repair, 0.0)
+        self.assertLessEqual(summary.win_rate_vs_random_repair, 1.0)
+        self.assertGreaterEqual(summary.win_rate_vs_random_search, 0.0)
+        self.assertLessEqual(summary.win_rate_vs_random_search, 1.0)
 
-    def test_reinterpretation_not_worse_on_small_batch(self):
+    def test_reinterpretation_not_worse_than_single_random_repair_on_small_batch(self):
         _, summaries = run_experiments.run_suite(node_counts=(3,), trials=10, candidate_limit=200)
         summary = summaries[0]
-        self.assertGreaterEqual(summary.reinterpretation_mean, summary.random_mean)
+        self.assertGreaterEqual(summary.reinterpretation_mean, summary.random_repair_mean)
+
+    def test_stronger_random_search_is_measured(self):
+        _, summaries = run_experiments.run_suite(node_counts=(4,), trials=5, candidate_limit=100)
+        summary = summaries[0]
+        self.assertGreaterEqual(summary.random_search_mean, 0.0)
+        # 強めのランダム探索には負ける場合がある。ここでは勝敗ではなく測定可能性を固定する。
+        self.assertIsInstance(summary.improvement_vs_random_search_mean, float)
 
     def test_multiple_node_counts(self):
         results, summaries = run_experiments.run_suite(node_counts=(3, 4, 5), trials=3, candidate_limit=50)
@@ -46,7 +56,7 @@ class TestExperiments(unittest.TestCase):
             self.assertTrue(json_path.exists())
             self.assertTrue(csv_path.exists())
             self.assertIn("summaries", json_path.read_text(encoding="utf-8"))
-            self.assertIn("node_count", csv_path.read_text(encoding="utf-8"))
+            self.assertIn("random_search_score", csv_path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
