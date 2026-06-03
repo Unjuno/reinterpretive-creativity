@@ -69,6 +69,14 @@ python -m unittest discover -s tests
 - [`docs/03_simulation_design.md`](docs/03_simulation_design.md): シミュレーション設計
 - [`docs/04_limitations.md`](docs/04_limitations.md): 限界
 - [`docs/05_related_work.md`](docs/05_related_work.md): 関連研究
+- [`docs/06_hypothesis.md`](docs/06_hypothesis.md): 検証仮説
+- [`docs/07_roadmap.md`](docs/07_roadmap.md): ロードマップ
+
+## CI
+
+CI は `push` と `pull_request` だけで実行します。
+
+手動起動用の `workflow_dispatch` は入れていません。
 
 ## 現時点の立場
 
