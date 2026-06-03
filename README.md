@@ -52,6 +52,7 @@ RIC(W, W') :=
 - 符号付き有向グラフによる人工ワールドモデル
 - 肯定関係と否定関係の衝突による内部不整合
 - ランダム修復と再解釈探索の比較
+- 複数 seed による小規模バッチ実験
 - 整合性、新規性、保存度、有用性 proxy による評価
 - GitHub Actions による Python シミュレーションの最小検証
 
@@ -59,8 +60,24 @@ RIC(W, W') :=
 
 ```bash
 python scripts/simulate.py
+python scripts/run_experiments.py
 python -m unittest discover -s tests
 ```
+
+## 初期バッチ結果
+
+固定設定の30 seedデモでは、次の結果になりました。
+
+| 指標 | 値 |
+|---|---:|
+| ランダム修復 平均スコア | 0.1833 |
+| 再解釈探索 平均スコア | 0.7394 |
+| 平均改善量 | 0.5561 |
+| 勝率 | 100% |
+
+詳細は [`results/initial_batch_summary.md`](results/initial_batch_summary.md) を参照してください。
+
+この結果は、創造性全体を証明するものではありません。小規模人工モデル上で、再解釈探索がランダム修復より高い代理スコアを出すことを確認した初期デモです。
 
 ## 文書
 

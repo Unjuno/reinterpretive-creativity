@@ -41,6 +41,35 @@
 | 有用性 proxy | 構造が空でなく、一定の関係を持つか |
 | 再解釈スコア | 上記を合成した値 |
 
+## 固定デモ
+
+`scripts/simulate.py` は、3ノードの固定ケースを実行します。
+
+```bash
+python scripts/simulate.py
+```
+
+このデモは、モデルの意味を確認するための最小例です。
+
+## 複数ケース実験
+
+`scripts/run_experiments.py` は、複数 seed の人工ケースを実行します。
+
+```bash
+python scripts/run_experiments.py
+```
+
+現時点では、次の条件です。
+
+| 項目 | 値 |
+|---|---:|
+| ノード数 | 3 |
+| 試行数 | 30 seed |
+| conflict_rate | 0.35 |
+| extra_positive_rate | 0.25 |
+
+初期結果は [`../results/initial_batch_summary.md`](../results/initial_batch_summary.md) に保存しています。
+
 ## 合否条件
 
 PASS条件は次です。
@@ -64,3 +93,5 @@ FAIL条件は次です。
 このシミュレーションの価値関数は proxy です。
 
 つまり、ここでの「価値」は、人間の価値判断を直接表すものではありません。最初の段階では、モデルが検証可能な形で動くかを確認するための簡易指標です。
+
+また、現時点の再解釈探索は全候補探索に近いため、ランダム修復より有利です。今後は、探索コストや候補数制約を入れて、より厳しい比較にする必要があります。
