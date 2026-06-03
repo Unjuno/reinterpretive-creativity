@@ -2,7 +2,7 @@
 
 目的:
 - 固定デモだけでなく、複数 seed / 複数ノード数の人工モデルで傾向を見る。
-- 再解釈探索を、単発ランダム修復と強めのランダム探索ベースラインの両方と比較する。
+- 再解釈探索を、単発ランダム修復・強めのランダム探索・局所修復探索と比較する。
 - 結果を JSON / CSV に保存できるようにする。
 
 注意:
@@ -59,9 +59,11 @@ class TrialResult:
     seed: int
     random_repair_score: float
     random_search_score: float
+    local_repair_score: float
     reinterpretation_score: float
     improvement_vs_random_repair: float
     improvement_vs_random_search: float
+    improvement_vs_local_repair: float
 
 
 @dataclass(frozen=True)
@@ -70,11 +72,14 @@ class ExperimentSummary:
     trials: int
     random_repair_mean: float
     random_search_mean: float
+    local_repair_mean: float
     reinterpretation_mean: float
     improvement_vs_random_repair_mean: float
     improvement_vs_random_search_mean: float
+    improvement_vs_local_repair_mean: float
     win_rate_vs_random_repair: float
     win_rate_vs_random_search: float
+    win_rate_vs_local_repair: float
 
 
 def make_nodes(node_count: int) -> tuple[Node, ...]:
@@ -130,7 +135,6 @@ def noisy_case(
         elif rng.random() < extra_positive_rate:
             raw[edge] = {1}
 
-    # 最低1つは内部不整合を入れる。そうでないと再解釈型創造性の検査にならない。
     if not has_conflict(raw):
         edge = rng.choice([edge for edge, value in teacher.items() if value == 1])
         raw.setdefault(edge, {1}).add(-1)
@@ -169,11 +173,6 @@ def preservation(raw: RawModel, candidate: Model) -> float:
 
 
 def density_score(candidate: Model) -> float:
-    """肯定辺の本数がノード数付近なら高いスコアにする。
-
-    空構造と過密構造の両方を下げる。
-    """
-
     positives = len(positive_edges(candidate))
     node_count = len(nodes_in_model(candidate))
     target = max(1, node_count)
@@ -183,8 +182,6 @@ def density_score(candidate: Model) -> float:
 
 
 def node_coverage_score(candidate: Model) -> float:
-    """肯定辺がどれだけ多くのノードを覆っているか。"""
-
     nodes = nodes_in_model(candidate)
     if not nodes:
         return 0.0
@@ -193,8 +190,6 @@ def node_coverage_score(candidate: Model) -> float:
 
 
 def weak_connectivity_score(candidate: Model) -> float:
-    """肯定辺を無向辺として見たときの最大連結成分比率。"""
-
     nodes = nodes_in_model(candidate)
     positives = positive_edges(candidate)
     if not nodes or not positives:
@@ -225,8 +220,6 @@ def weak_connectivity_score(candidate: Model) -> float:
 
 
 def in_out_coverage_score(candidate: Model) -> float:
-    """肯定辺について、入辺・出辺を持つノードの被覆を測る。"""
-
     nodes = nodes_in_model(candidate)
     positives = positive_edges(candidate)
     if not nodes or not positives:
@@ -238,8 +231,6 @@ def in_out_coverage_score(candidate: Model) -> float:
 
 
 def utility_components(candidate: Model) -> UtilityComponents:
-    """有用性 proxy を構成要素に分解して返す。"""
-
     return UtilityComponents(
         density_score=density_score(candidate),
         node_coverage_score=node_coverage_score(candidate),
@@ -249,12 +240,6 @@ def utility_components(candidate: Model) -> UtilityComponents:
 
 
 def utility_proxy(candidate: Model) -> float:
-    """構造的有用性の簡易 proxy。
-
-    これは人間の価値判断ではない。
-    現時点では、密度・ノード被覆・弱連結・入出力被覆の合成値である。
-    """
-
     return utility_components(candidate).utility
 
 
@@ -295,11 +280,24 @@ def random_candidates(
     seed: int,
     candidate_limit: int,
 ) -> Iterable[Model]:
-    """同じ候補数予算を使う強めのランダム探索ベースライン。"""
-
     rng = Random(seed)
     for _ in range(candidate_limit):
         yield {edge: rng.choice((-1, 0, 1)) for edge in edges}
+
+
+def neighbor_candidates(model: Model, edges: tuple[Edge, ...], rng: Random) -> Iterable[Model]:
+    """1辺だけ変更した近傍候補をランダム順で返す。"""
+
+    edge_order = list(edges)
+    rng.shuffle(edge_order)
+    for edge in edge_order:
+        values = [-1, 0, 1]
+        values.remove(model[edge])
+        rng.shuffle(values)
+        for value in values:
+            candidate = dict(model)
+            candidate[edge] = value
+            yield candidate
 
 
 def best_from_stream(stream: Iterable[Model], teacher: Model, raw: RawModel) -> tuple[float, Model]:
@@ -352,6 +350,64 @@ def random_search_baseline(
     return best_from_stream(stream, teacher, raw)
 
 
+def local_repair_search(
+    teacher: Model,
+    raw: RawModel,
+    seed: int,
+    candidate_limit: int,
+) -> tuple[float, Model]:
+    """初期モデルから1辺変更の近傍をたどる局所修復探索。
+
+    改善する近傍があれば移動し、改善がない場合は1辺だけ摂動して停滞から抜ける。
+    候補評価回数は candidate_limit で制限する。
+    """
+
+    rng = Random(seed + 300_000)
+    edges = tuple(teacher.keys())
+    current = to_model(raw, edges)
+    if not differs(current, teacher):
+        edge = rng.choice(edges)
+        current[edge] = 0 if current[edge] != 0 else 1
+
+    current_score = score(current, teacher, raw) if differs(current, teacher) else -1.0
+    best_model = dict(current)
+    best_score = current_score
+    evaluated = 0
+
+    while evaluated < candidate_limit:
+        moved = False
+        best_neighbor: Model | None = None
+        best_neighbor_score = current_score
+        for candidate in neighbor_candidates(current, edges, rng):
+            if evaluated >= candidate_limit:
+                break
+            evaluated += 1
+            if not differs(candidate, teacher):
+                continue
+            candidate_score = score(candidate, teacher, raw)
+            if candidate_score > best_neighbor_score:
+                best_neighbor = candidate
+                best_neighbor_score = candidate_score
+            if candidate_score > best_score:
+                best_model = candidate
+                best_score = candidate_score
+
+        if best_neighbor is not None:
+            current = best_neighbor
+            current_score = best_neighbor_score
+            moved = True
+
+        if not moved:
+            current = dict(current)
+            edge = rng.choice(edges)
+            values = [-1, 0, 1]
+            values.remove(current[edge])
+            current[edge] = rng.choice(values)
+            current_score = score(current, teacher, raw) if differs(current, teacher) else -1.0
+
+    return best_score, best_model
+
+
 def random_repair(teacher: Model, raw: RawModel, seed: int) -> tuple[float, Model]:
     rng = Random(seed)
     model = to_model(raw, teacher.keys())
@@ -373,6 +429,12 @@ def run_trial(seed: int, node_count: int = 3, candidate_limit: int = 500) -> Tri
         seed=seed,
         candidate_limit=candidate_limit,
     )
+    local_repair_score, _ = local_repair_search(
+        teacher,
+        raw,
+        seed=seed,
+        candidate_limit=candidate_limit,
+    )
     reinterpretation_score, _ = reinterpretation_search(
         teacher,
         raw,
@@ -384,9 +446,11 @@ def run_trial(seed: int, node_count: int = 3, candidate_limit: int = 500) -> Tri
         seed=seed,
         random_repair_score=random_repair_score,
         random_search_score=random_search_score,
+        local_repair_score=local_repair_score,
         reinterpretation_score=reinterpretation_score,
         improvement_vs_random_repair=reinterpretation_score - random_repair_score,
         improvement_vs_random_search=reinterpretation_score - random_search_score,
+        improvement_vs_local_repair=reinterpretation_score - local_repair_score,
     )
 
 
@@ -399,11 +463,15 @@ def summarize(node_count: int, results: list[TrialResult]) -> ExperimentSummary:
     wins_vs_random_search = sum(
         1 for result in results if result.reinterpretation_score >= result.random_search_score
     )
+    wins_vs_local_repair = sum(
+        1 for result in results if result.reinterpretation_score >= result.local_repair_score
+    )
     return ExperimentSummary(
         node_count=node_count,
         trials=len(results),
         random_repair_mean=mean(result.random_repair_score for result in results),
         random_search_mean=mean(result.random_search_score for result in results),
+        local_repair_mean=mean(result.local_repair_score for result in results),
         reinterpretation_mean=mean(result.reinterpretation_score for result in results),
         improvement_vs_random_repair_mean=mean(
             result.improvement_vs_random_repair for result in results
@@ -411,8 +479,12 @@ def summarize(node_count: int, results: list[TrialResult]) -> ExperimentSummary:
         improvement_vs_random_search_mean=mean(
             result.improvement_vs_random_search for result in results
         ),
+        improvement_vs_local_repair_mean=mean(
+            result.improvement_vs_local_repair for result in results
+        ),
         win_rate_vs_random_repair=wins_vs_random_repair / len(results),
         win_rate_vs_random_search=wins_vs_random_search / len(results),
+        win_rate_vs_local_repair=wins_vs_local_repair / len(results),
     )
 
 
@@ -437,8 +509,8 @@ def run_suite(
 
 def format_summary(summaries: list[ExperimentSummary]) -> str:
     lines = [
-        "| ノード数 | 試行数 | 単発ランダム平均 | ランダム探索平均 | 再解釈平均 | 改善量(単発) | 改善量(探索) | 勝率(単発) | 勝率(探索) |",
-        "|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| ノード数 | 試行数 | 単発ランダム平均 | ランダム探索平均 | 局所修復平均 | 再解釈平均 | 改善量(単発) | 改善量(探索) | 改善量(局所) | 勝率(単発) | 勝率(探索) | 勝率(局所) |",
+        "|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for summary in summaries:
         lines.append(
@@ -447,11 +519,14 @@ def format_summary(summaries: list[ExperimentSummary]) -> str:
             f"{summary.trials} | "
             f"{summary.random_repair_mean:.4f} | "
             f"{summary.random_search_mean:.4f} | "
+            f"{summary.local_repair_mean:.4f} | "
             f"{summary.reinterpretation_mean:.4f} | "
             f"{summary.improvement_vs_random_repair_mean:.4f} | "
             f"{summary.improvement_vs_random_search_mean:.4f} | "
+            f"{summary.improvement_vs_local_repair_mean:.4f} | "
             f"{summary.win_rate_vs_random_repair:.2%} | "
-            f"{summary.win_rate_vs_random_search:.2%} |"
+            f"{summary.win_rate_vs_random_search:.2%} | "
+            f"{summary.win_rate_vs_local_repair:.2%} |"
         )
     return "\n".join(lines)
 
@@ -475,9 +550,11 @@ def write_csv(path: Path, results: list[TrialResult]) -> None:
                 "seed",
                 "random_repair_score",
                 "random_search_score",
+                "local_repair_score",
                 "reinterpretation_score",
                 "improvement_vs_random_repair",
                 "improvement_vs_random_search",
+                "improvement_vs_local_repair",
             ],
         )
         writer.writeheader()
