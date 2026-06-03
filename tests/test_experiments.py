@@ -11,6 +11,29 @@ class TestExperiments(unittest.TestCase):
             _, raw = run_experiments.noisy_case(seed, node_count=3)
             self.assertTrue(any(values == {1, -1} for values in raw.values()))
 
+    def test_utility_components_are_bounded(self):
+        teacher, _ = run_experiments.noisy_case(seed=0, node_count=3)
+        components = run_experiments.utility_components(teacher)
+        for value in (
+            components.density_score,
+            components.node_coverage_score,
+            components.weak_connectivity_score,
+            components.in_out_coverage_score,
+            components.utility,
+        ):
+            self.assertGreaterEqual(value, 0.0)
+            self.assertLessEqual(value, 1.0)
+
+    def test_empty_positive_structure_has_zero_utility(self):
+        nodes = run_experiments.make_nodes(3)
+        empty = {edge: 0 for edge in run_experiments.all_edges(nodes)}
+        self.assertEqual(run_experiments.utility_proxy(empty), 0.0)
+
+    def test_cycle_teacher_has_high_structural_utility(self):
+        nodes = run_experiments.make_nodes(3)
+        teacher = run_experiments.build_cycle_teacher(nodes)
+        self.assertGreaterEqual(run_experiments.utility_proxy(teacher), 0.9)
+
     def test_trial_result_is_valid(self):
         result = run_experiments.run_trial(0, node_count=3)
         self.assertEqual(result.node_count, 3)

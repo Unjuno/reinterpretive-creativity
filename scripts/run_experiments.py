@@ -30,6 +30,30 @@ RawModel = dict[Edge, set[int]]
 
 
 @dataclass(frozen=True)
+class UtilityComponents:
+    """有用性 proxy の内訳。
+
+    すべて 0.0〜1.0 の無次元スコアとして扱う。
+    """
+
+    density_score: float
+    node_coverage_score: float
+    weak_connectivity_score: float
+    in_out_coverage_score: float
+
+    @property
+    def utility(self) -> float:
+        """重み付き平均による合成 utility proxy。"""
+
+        return (
+            0.35 * self.density_score
+            + 0.25 * self.node_coverage_score
+            + 0.25 * self.weak_connectivity_score
+            + 0.15 * self.in_out_coverage_score
+        )
+
+
+@dataclass(frozen=True)
 class TrialResult:
     node_count: int
     seed: int
@@ -63,6 +87,14 @@ def make_nodes(node_count: int) -> tuple[Node, ...]:
 
 def all_edges(nodes: tuple[Node, ...]) -> tuple[Edge, ...]:
     return tuple((src, dst) for src in nodes for dst in nodes if src != dst)
+
+
+def nodes_in_model(model: Model) -> set[Node]:
+    return {node for edge in model for node in edge}
+
+
+def positive_edges(model: Model) -> list[Edge]:
+    return [edge for edge, value in model.items() if value == 1]
 
 
 def build_cycle_teacher(nodes: tuple[Node, ...]) -> Model:
@@ -136,15 +168,94 @@ def preservation(raw: RawModel, candidate: Model) -> float:
     return kept / total if total else 0.0
 
 
-def utility_proxy(candidate: Model) -> float:
-    positives = sum(1 for value in candidate.values() if value == 1)
-    node_count = len({node for edge in candidate for node in edge})
+def density_score(candidate: Model) -> float:
+    """肯定辺の本数がノード数付近なら高いスコアにする。
+
+    空構造と過密構造の両方を下げる。
+    """
+
+    positives = len(positive_edges(candidate))
+    node_count = len(nodes_in_model(candidate))
     target = max(1, node_count)
     if positives == 0:
         return 0.0
-    if positives <= target:
-        return positives / target
-    return max(0.0, 1.0 - (positives - target) / target)
+    return max(0.0, 1.0 - abs(positives - target) / target)
+
+
+def node_coverage_score(candidate: Model) -> float:
+    """肯定辺がどれだけ多くのノードを覆っているか。"""
+
+    nodes = nodes_in_model(candidate)
+    if not nodes:
+        return 0.0
+    covered = {node for edge in positive_edges(candidate) for node in edge}
+    return len(covered) / len(nodes)
+
+
+def weak_connectivity_score(candidate: Model) -> float:
+    """肯定辺を無向辺として見たときの最大連結成分比率。"""
+
+    nodes = nodes_in_model(candidate)
+    positives = positive_edges(candidate)
+    if not nodes or not positives:
+        return 0.0
+
+    adjacency = {node: set() for node in nodes}
+    for src, dst in positives:
+        adjacency[src].add(dst)
+        adjacency[dst].add(src)
+
+    seen: set[Node] = set()
+    largest = 0
+    for start in nodes:
+        if start in seen:
+            continue
+        stack = [start]
+        size = 0
+        while stack:
+            node = stack.pop()
+            if node in seen:
+                continue
+            seen.add(node)
+            size += 1
+            stack.extend(adjacency[node] - seen)
+        largest = max(largest, size)
+
+    return largest / len(nodes)
+
+
+def in_out_coverage_score(candidate: Model) -> float:
+    """肯定辺について、入辺・出辺を持つノードの被覆を測る。"""
+
+    nodes = nodes_in_model(candidate)
+    positives = positive_edges(candidate)
+    if not nodes or not positives:
+        return 0.0
+
+    out_nodes = {src for src, _ in positives}
+    in_nodes = {dst for _, dst in positives}
+    return (len(out_nodes) + len(in_nodes)) / (2 * len(nodes))
+
+
+def utility_components(candidate: Model) -> UtilityComponents:
+    """有用性 proxy を構成要素に分解して返す。"""
+
+    return UtilityComponents(
+        density_score=density_score(candidate),
+        node_coverage_score=node_coverage_score(candidate),
+        weak_connectivity_score=weak_connectivity_score(candidate),
+        in_out_coverage_score=in_out_coverage_score(candidate),
+    )
+
+
+def utility_proxy(candidate: Model) -> float:
+    """構造的有用性の簡易 proxy。
+
+    これは人間の価値判断ではない。
+    現時点では、密度・ノード被覆・弱連結・入出力被覆の合成値である。
+    """
+
+    return utility_components(candidate).utility
 
 
 def score(candidate: Model, teacher: Model, raw: RawModel) -> float:
