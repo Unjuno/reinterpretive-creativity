@@ -2,7 +2,7 @@
 
 目的:
 - 平均スコアだけでなく、1ケースで何が変わったかを見る。
-- 教師モデル、初期モデル、各探索結果、変更辺をMarkdownで出力する。
+- 教師モデル、初期モデル、各探索結果、変更辺、スコア内訳をMarkdownで出力する。
 
 注意:
 - これは説明補助であり、創造性の証明ではない。
@@ -83,17 +83,45 @@ def change_rows(before: Model, after: Model) -> list[str]:
     ]
 
 
+def score_breakdown_rows(candidate: Model, teacher: Model, raw: RawModel) -> list[str]:
+    """候補モデルの総合スコアを構成要素に分解する。"""
+
+    novelty_distance = run_experiments.distance(candidate, teacher)
+    preservation = run_experiments.preservation(raw, candidate)
+    utility_components = run_experiments.utility_components(candidate)
+    utility_proxy = utility_components.utility
+    total_score = run_experiments.score(candidate, teacher, raw)
+
+    return [
+        f"| novelty_distance | {novelty_distance:.4f} | 教師モデルとの差分。大きいほど教師モデルと異なる |",
+        f"| preservation | {preservation:.4f} | 初期モデルの非矛盾情報をどれだけ保存したか |",
+        f"| utility_proxy | {utility_proxy:.4f} | 構造的な有用性らしさの暫定 proxy |",
+        f"| density_score | {utility_components.density_score:.4f} | 空構造と過密構造を下げる密度指標 |",
+        f"| node_coverage_score | {utility_components.node_coverage_score:.4f} | 肯定辺が覆うノードの割合 |",
+        f"| weak_connectivity_score | {utility_components.weak_connectivity_score:.4f} | 肯定辺の最大弱連結成分比率 |",
+        f"| in_out_coverage_score | {utility_components.in_out_coverage_score:.4f} | 入辺・出辺を持つノードの広がり |",
+        f"| total_score | {total_score:.4f} | novelty_distance * preservation * utility_proxy |",
+    ]
+
+
 def result_block(
     title: str,
     score: float,
     initial: Model,
     teacher: Model,
+    raw: RawModel,
     result: Model,
 ) -> str:
     lines = [
         f"### {title}",
         "",
         f"score: `{score:.4f}`",
+        "",
+        "#### スコア内訳",
+        "",
+        "| 指標 | 値 | 意味 |",
+        "|---|---:|---|",
+        *score_breakdown_rows(result, teacher, raw),
         "",
         "#### 結果モデル",
         "",
@@ -156,17 +184,17 @@ def explain_case(seed: int, node_count: int, candidate_limit: int) -> str:
         "",
         "## 探索結果",
         "",
-        result_block("単発ランダム修復", random_repair_score, initial, teacher, random_repair_model),
+        result_block("単発ランダム修復", random_repair_score, initial, teacher, raw, random_repair_model),
         "",
-        result_block("ランダム探索", random_search_score, initial, teacher, random_search_model),
+        result_block("ランダム探索", random_search_score, initial, teacher, raw, random_search_model),
         "",
-        result_block("局所修復探索", local_repair_score, initial, teacher, local_repair_model),
+        result_block("局所修復探索", local_repair_score, initial, teacher, raw, local_repair_model),
         "",
-        result_block("再解釈探索", reinterpretation_score, initial, teacher, reinterpretation_model),
+        result_block("再解釈探索", reinterpretation_score, initial, teacher, raw, reinterpretation_model),
         "",
         "## 注意",
         "",
-        "このログは、候補モデルの変更内容を読むための説明補助です。",
+        "このログは、候補モデルの変更内容とスコア構成要素を読むための説明補助です。",
         "創造性そのものを証明するものではありません。",
     ]
     return "\n".join(lines) + "\n"
