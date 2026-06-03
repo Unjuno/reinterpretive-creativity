@@ -91,6 +91,7 @@ python -m unittest discover -s tests
 - [`docs/06_hypothesis.md`](docs/06_hypothesis.md): 検証仮説
 - [`docs/07_roadmap.md`](docs/07_roadmap.md): ロードマップ
 - [`docs/08_ci_check.md`](docs/08_ci_check.md): CI確認用メモ
+- [`docs/09_failure_analysis.md`](docs/09_failure_analysis.md): 失敗分析と集団分布
 
 ## CI
 
