@@ -53,7 +53,8 @@ RIC(W, W') :=
 - 肯定関係と否定関係の衝突による内部不整合
 - 単発ランダム修復、ランダム探索、局所修復探索、再解釈探索の比較
 - 複数 seed / 複数ノード数による小規模バッチ実験
-- JSON / CSV 形式の結果出力
+- 1ケースの変更辺を読むための説明ログ
+- JSON / CSV / Markdown 形式の結果出力
 - 整合性、新規性、保存度、有用性 proxy による評価
 - GitHub Actions による Python シミュレーションの最小検証
 
@@ -63,6 +64,7 @@ RIC(W, W') :=
 python scripts/simulate.py
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --json results/local_experiment.json --csv results/local_experiment.csv
+python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100 --output results/local_explain_trial.md
 python -m unittest discover -s tests
 ```
 
@@ -79,6 +81,21 @@ python -m unittest discover -s tests
 詳細は [`results/initial_batch_summary.md`](results/initial_batch_summary.md) を参照してください。
 
 この結果は、創造性全体を証明するものではありません。局所修復探索はノード数4〜5で再解釈探索より高い代理スコアを出していますが、これは現行スコア関数と候補生成条件に依存します。
+
+## 説明ログ
+
+`explain_trial.py` は、1ケースについて次を Markdown で出力します。
+
+- 教師モデル
+- 初期モデル
+- 単発ランダム修復の結果
+- ランダム探索の結果
+- 局所修復探索の結果
+- 再解釈探索の結果
+- 初期モデルからの変更辺
+- 教師モデルとの差分
+
+これは説明補助であり、創造性の証明ではありません。
 
 ## 文書
 
