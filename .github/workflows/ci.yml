@@ -22,7 +22,18 @@ jobs:
         run: python scripts/simulate.py
 
       - name: Run batch experiment
-        run: python scripts/run_experiments.py
+        run: |
+          python scripts/run_experiments.py \
+            --nodes 3,4,5 \
+            --trials 10 \
+            --candidate-limit 200 \
+            --json results/ci_experiment.json \
+            --csv results/ci_experiment.csv
+
+      - name: Check generated outputs
+        run: |
+          test -s results/ci_experiment.json
+          test -s results/ci_experiment.csv
 
       - name: Run tests
         run: python -m unittest discover -s tests

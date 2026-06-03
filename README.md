@@ -52,7 +52,8 @@ RIC(W, W') :=
 - 符号付き有向グラフによる人工ワールドモデル
 - 肯定関係と否定関係の衝突による内部不整合
 - ランダム修復と再解釈探索の比較
-- 複数 seed による小規模バッチ実験
+- 複数 seed / 複数ノード数による小規模バッチ実験
+- JSON / CSV 形式の結果出力
 - 整合性、新規性、保存度、有用性 proxy による評価
 - GitHub Actions による Python シミュレーションの最小検証
 
@@ -60,20 +61,20 @@ RIC(W, W') :=
 
 ```bash
 python scripts/simulate.py
-python scripts/run_experiments.py
+python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200
+python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --json results/local_experiment.json --csv results/local_experiment.csv
 python -m unittest discover -s tests
 ```
 
 ## 初期バッチ結果
 
-固定設定の30 seedデモでは、次の結果になりました。
+固定設定の3〜5ノード比較では、次の結果になりました。
 
-| 指標 | 値 |
-|---|---:|
-| ランダム修復 平均スコア | 0.1833 |
-| 再解釈探索 平均スコア | 0.7394 |
-| 平均改善量 | 0.5561 |
-| 勝率 | 100% |
+| ノード数 | 試行数 | ランダム平均 | 再解釈平均 | 平均改善量 | 勝率 |
+|---:|---:|---:|---:|---:|---:|
+| 3 | 10 | 0.2667 | 0.7667 | 0.5000 | 100.00% |
+| 4 | 10 | 0.1583 | 0.4758 | 0.3174 | 100.00% |
+| 5 | 10 | 0.1240 | 0.3533 | 0.2293 | 100.00% |
 
 詳細は [`results/initial_batch_summary.md`](results/initial_batch_summary.md) を参照してください。
 
