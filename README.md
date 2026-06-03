@@ -53,7 +53,7 @@ RIC(W, W') :=
 - 肯定関係と否定関係の衝突による内部不整合
 - 単発ランダム修復、ランダム探索、局所修復探索、再解釈探索の比較
 - 複数 seed / 複数ノード数による小規模バッチ実験
-- 1ケースの変更辺を読むための説明ログ
+- 1ケースの変更辺とスコア内訳を読むための説明ログ
 - JSON / CSV / Markdown 形式の結果出力
 - 整合性、新規性、保存度、有用性 proxy による評価
 - GitHub Actions による Python シミュレーションの最小検証
@@ -92,8 +92,11 @@ python -m unittest discover -s tests
 - ランダム探索の結果
 - 局所修復探索の結果
 - 再解釈探索の結果
+- スコア内訳
 - 初期モデルからの変更辺
 - 教師モデルとの差分
+
+スコア内訳には、`novelty_distance`、`preservation`、`utility_proxy`、`density_score`、`node_coverage_score`、`weak_connectivity_score`、`in_out_coverage_score`、`total_score` が含まれます。
 
 これは説明補助であり、創造性の証明ではありません。読み方は [`docs/12_explain_trial.md`](docs/12_explain_trial.md) を参照してください。
 
