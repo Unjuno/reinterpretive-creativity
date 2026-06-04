@@ -21,12 +21,15 @@ python scripts/select_cases.py \
   --trials 10 \
   --candidate-limit 200 \
   --output results/representative_cases.md \
+  --json results/representative_cases.json \
   --logs-dir results/representative_cases
 ```
 
 `--logs-dir` を指定すると、抽出された各代表ケースについて `explain_trial.py` 相当の説明ログも生成されます。
 
-## 出力内容
+`--json` を指定すると、代表ケース一覧を機械処理しやすいJSON形式でも保存します。
+
+## Markdown出力内容
 
 代表ケースサマリには、次が含まれます。
 
@@ -40,6 +43,24 @@ python scripts/select_cases.py \
 | 局所修復 | 局所修復探索のスコア |
 | 再解釈 | 再解釈探索のスコア |
 | margin | 対象手法のスコアから他手法の最大スコアを引いた値 |
+
+## JSON出力内容
+
+JSON出力には、次が含まれます。
+
+| フィールド | 意味 |
+|---|---|
+| metadata.node_counts | 対象ノード数 |
+| metadata.trials | 各ノード数の試行数 |
+| metadata.candidate_limit | 候補数予算 |
+| metadata.note | この抽出の注意書き |
+| representative_cases | 抽出された代表ケース一覧 |
+| representative_cases[].label | 代表ケース種別 |
+| representative_cases[].node_count | ノード数 |
+| representative_cases[].seed | seed |
+| representative_cases[].scores | 各探索手法のスコア |
+| representative_cases[].margin | 対象手法のmargin。差が最も小さいケースでは `null` |
+| representative_cases[].score_spread | そのケース内の最大スコアと最小スコアの差 |
 
 ## margin の読み方
 
@@ -71,6 +92,6 @@ margin = score(target_method) - max(score(other_methods))
 - ノード数ごとの代表ケース抽出
 - margin閾値による抽出
 - スコア構成要素での代表ケース抽出
-- JSON形式での代表ケース出力
+- JSON形式での1ケース説明ログ
 
-ただし、初期MVPでは、Markdownサマリと説明ログ生成に留めます。
+ただし、初期MVPでは、Markdownサマリ、JSONサマリ、説明ログ生成に留めます。
