@@ -1,6 +1,6 @@
 # 1ケース説明ログの読み方
 
-`scripts/explain_trial.py` は、1つの実験ケースについて、教師モデル・初期モデル・各探索結果を Markdown で出力します。
+`scripts/explain_trial.py` は、1つの実験ケースについて、教師モデル・初期モデル・各探索結果を Markdown / JSON で出力します。
 
 ## 目的
 
@@ -14,6 +14,7 @@
 - 高スコア候補がどの指標で高くなったか
 - 局所修復探索がどのステップで何を変えたか
 - 高スコア候補が本当に解釈しやすい構造か
+- 後続ツールで変更辺やスコア内訳を再利用できるか
 
 ## 実行例
 
@@ -22,18 +23,19 @@ python scripts/explain_trial.py \
   --seed 0 \
   --node-count 4 \
   --candidate-limit 100 \
-  --output results/local_explain_trial.md
+  --output results/local_explain_trial.md \
+  --json results/local_explain_trial.json
 ```
 
-標準出力に出したい場合は、`--output` を省略します。
+標準出力にMarkdownを出したい場合は、`--output` を省略します。
 
 ```bash
 python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100
 ```
 
-## 出力内容
+## Markdown出力内容
 
-出力には、次が含まれます。
+Markdown出力には、次が含まれます。
 
 | セクション | 内容 |
 |---|---|
@@ -48,6 +50,28 @@ python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100
 | 局所修復探索の改善過程 | どの辺をどう変え、スコアがどう変わったか |
 | 初期モデルからの変更 | 初期理解からどの辺が変わったか |
 | 教師モデルとの差分 | 教師モデルとどの辺が異なるか |
+
+## JSON出力内容
+
+JSON出力には、次が含まれます。
+
+| フィールド | 意味 |
+|---|---|
+| metadata.seed | seed |
+| metadata.node_count | ノード数 |
+| metadata.candidate_limit | 候補数予算 |
+| teacher_model | 教師モデルの辺リスト |
+| initial_model | 初期モデルの辺リスト。矛盾も含む |
+| results.random_repair | 単発ランダム修復の結果 |
+| results.random_search | ランダム探索の結果 |
+| results.local_repair | 局所修復探索の結果 |
+| results.reinterpretation | 再解釈探索の結果 |
+| results.*.score | 総合スコア |
+| results.*.score_breakdown | スコア構成要素 |
+| results.*.model | 結果モデルの辺リスト |
+| results.*.changes_from_initial | 初期モデルからの変更辺 |
+| results.*.differences_from_teacher | 教師モデルとの差分 |
+| results.local_repair.local_repair_trace | 局所修復探索の改善過程 |
 
 ## スコア内訳
 
@@ -70,16 +94,16 @@ python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100
 
 ## 局所修復探索の改善過程
 
-局所修復探索には、次の表が追加されます。
+局所修復探索には、次の表またはJSON配列が追加されます。
 
 | 列 | 意味 |
 |---|---|
 | step | 記録された探索ステップ |
 | action | 改善、摂動、初期摂動の区別 |
 | evaluated | その時点までに評価した候補数 |
-| 辺 | 変更した辺 |
-| 変更前 | 変更前の値 |
-| 変更後 | 変更後の値 |
+| edge | 変更した辺 |
+| old_value | 変更前の値 |
+| new_value | 変更後の値 |
 | score_before | 変更前のスコア |
 | score_after | 変更後のスコア |
 | best_score | その時点までの最良スコア |
@@ -105,6 +129,6 @@ python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100
 - 変更辺の数
 - 変更種別の集計
 - 複数ケースの代表例抽出
-- JSON形式の1ケース説明ログ
+- JSON出力を使った可視化
 
 ただし、初期MVPでは、説明ログは1ケースを読むための最小機能に留めます。
