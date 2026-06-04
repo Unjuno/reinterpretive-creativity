@@ -55,6 +55,7 @@ RIC(W, W') :=
 - 複数 seed / 複数ノード数による小規模バッチ実験
 - 1ケースの変更辺・スコア内訳・局所修復探索の改善過程を読むための説明ログ
 - 代表ケース抽出と代表ケース別の説明ログ生成
+- 代表ケース一覧のMarkdown / JSON出力
 - JSON / CSV / Markdown 形式の結果出力
 - 整合性、新規性、保存度、有用性 proxy による評価
 - GitHub Actions による Python シミュレーションの最小検証
@@ -66,7 +67,7 @@ python scripts/simulate.py
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --json results/local_experiment.json --csv results/local_experiment.csv
 python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100 --output results/local_explain_trial.md
-python scripts/select_cases.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --output results/representative_cases.md --logs-dir results/representative_cases
+python scripts/select_cases.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --output results/representative_cases.md --json results/representative_cases.json --logs-dir results/representative_cases
 python -m unittest discover -s tests
 ```
 
@@ -114,7 +115,7 @@ python -m unittest discover -s tests
 - ランダム探索が最も有利なケース
 - 各手法の差が最も小さいケース
 
-指定した `--logs-dir` には、抽出された各ケースの説明ログも保存されます。
+指定した `--logs-dir` には、抽出された各ケースの説明ログも保存されます。`--json` を指定すると、代表ケース一覧を機械処理しやすいJSON形式でも保存できます。
 
 この抽出は説明補助であり、創造性の証明ではありません。
 

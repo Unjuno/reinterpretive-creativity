@@ -4,6 +4,7 @@
 - 平均値だけでは見えない、典型的な勝ち/負けケースを選ぶ。
 - 再解釈探索、局所修復探索、ランダム探索がそれぞれ有利なケースを探す。
 - 選ばれたケースについて、説明ログをMarkdownで生成できるようにする。
+- 代表ケース一覧をJSONで保存できるようにする。
 
 注意:
 - 代表ケース抽出は説明補助であり、創造性の証明ではない。
@@ -12,7 +13,8 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+import json
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 try:
@@ -176,6 +178,54 @@ def summary_markdown(
     return "\n".join(lines) + "\n"
 
 
+def selected_case_record(label: str, case: CaseScores, margin: float | None) -> dict[str, object]:
+    return {
+        "label": label,
+        "node_count": case.node_count,
+        "seed": case.seed,
+        "scores": {
+            "random_repair": case.random_repair_score,
+            "random_search": case.random_search_score,
+            "local_repair": case.local_repair_score,
+            "reinterpretation": case.reinterpretation_score,
+        },
+        "margin": margin,
+        "score_spread": case.score_spread,
+    }
+
+
+def representative_cases_json(
+    selected: dict[str, tuple[CaseScores, float | None]],
+    node_counts: tuple[int, ...],
+    trials: int,
+    candidate_limit: int,
+) -> dict[str, object]:
+    return {
+        "metadata": {
+            "node_counts": list(node_counts),
+            "trials": trials,
+            "candidate_limit": candidate_limit,
+            "note": "代表ケース抽出は説明補助であり、創造性の証明ではない。",
+        },
+        "representative_cases": [
+            selected_case_record(label, case, margin)
+            for label, (case, margin) in selected.items()
+        ],
+    }
+
+
+def write_json(
+    path: Path,
+    selected: dict[str, tuple[CaseScores, float | None]],
+    node_counts: tuple[int, ...],
+    trials: int,
+    candidate_limit: int,
+) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = representative_cases_json(selected, node_counts, trials, candidate_limit)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def write_outputs(
     selected: dict[str, tuple[CaseScores, float | None]],
     output: Path,
@@ -183,12 +233,22 @@ def write_outputs(
     node_counts: tuple[int, ...],
     trials: int,
     candidate_limit: int,
+    json_output: Path | None = None,
 ) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
         summary_markdown(selected, node_counts, trials, candidate_limit),
         encoding="utf-8",
     )
+
+    if json_output is not None:
+        write_json(
+            path=json_output,
+            selected=selected,
+            node_counts=node_counts,
+            trials=trials,
+            candidate_limit=candidate_limit,
+        )
 
     if logs_dir is None:
         return
@@ -215,6 +275,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--trials", type=int, default=10)
     parser.add_argument("--candidate-limit", type=int, default=200)
     parser.add_argument("--output", type=Path, default=Path("results/representative_cases.md"))
+    parser.add_argument("--json", type=Path, default=None)
     parser.add_argument("--logs-dir", type=Path, default=None)
     return parser
 
@@ -235,6 +296,7 @@ def main() -> None:
         node_counts=node_counts,
         trials=args.trials,
         candidate_limit=args.candidate_limit,
+        json_output=args.json,
     )
     print(summary_markdown(selected, node_counts, args.trials, args.candidate_limit), end="")
 
