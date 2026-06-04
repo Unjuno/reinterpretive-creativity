@@ -36,7 +36,8 @@ jobs:
             --seed 0 \
             --node-count 4 \
             --candidate-limit 100 \
-            --output results/ci_explain_trial.md
+            --output results/ci_explain_trial.md \
+            --json results/ci_explain_trial.json
 
       - name: Run representative case selection
         run: |
@@ -53,6 +54,8 @@ jobs:
           test -s results/ci_experiment.json
           test -s results/ci_experiment.csv
           test -s results/ci_explain_trial.md
+          test -s results/ci_explain_trial.json
+          grep -q "local_repair_trace" results/ci_explain_trial.json
           test -s results/ci_representative_cases.md
           test -s results/ci_representative_cases.json
           grep -q "representative_cases" results/ci_representative_cases.json
