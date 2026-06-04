@@ -54,6 +54,7 @@ RIC(W, W') :=
 - 単発ランダム修復、ランダム探索、局所修復探索、再解釈探索の比較
 - 複数 seed / 複数ノード数による小規模バッチ実験
 - 1ケースの変更辺・スコア内訳・局所修復探索の改善過程を読むための説明ログ
+- 代表ケース抽出と代表ケース別の説明ログ生成
 - JSON / CSV / Markdown 形式の結果出力
 - 整合性、新規性、保存度、有用性 proxy による評価
 - GitHub Actions による Python シミュレーションの最小検証
@@ -65,6 +66,7 @@ python scripts/simulate.py
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --json results/local_experiment.json --csv results/local_experiment.csv
 python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100 --output results/local_explain_trial.md
+python scripts/select_cases.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --output results/representative_cases.md --logs-dir results/representative_cases
 python -m unittest discover -s tests
 ```
 
@@ -102,6 +104,19 @@ python -m unittest discover -s tests
 局所修復探索の改善過程には、変更した辺、変更前後の値、変更前後のスコア、その時点までの最良スコアが含まれます。
 
 これは説明補助であり、創造性の証明ではありません。読み方は [`docs/12_explain_trial.md`](docs/12_explain_trial.md) を参照してください。
+
+## 代表ケース抽出
+
+`select_cases.py` は、複数seedの中から次の代表ケースを抽出します。
+
+- 再解釈探索が最も有利なケース
+- 局所修復探索が最も有利なケース
+- ランダム探索が最も有利なケース
+- 各手法の差が最も小さいケース
+
+指定した `--logs-dir` には、抽出された各ケースの説明ログも保存されます。
+
+この抽出は説明補助であり、創造性の証明ではありません。
 
 ## 文書
 

@@ -1,0 +1,51 @@
+from pathlib import Path
+import tempfile
+import unittest
+
+from scripts import select_cases
+
+
+class TestSelectCases(unittest.TestCase):
+    def test_collect_and_select_representative_cases(self):
+        cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
+        self.assertEqual(len(cases), 3)
+        selected = select_cases.select_representative_cases(cases)
+        self.assertIn("再解釈探索が最も有利なケース", selected)
+        self.assertIn("局所修復探索が最も有利なケース", selected)
+        self.assertIn("ランダム探索が最も有利なケース", selected)
+        self.assertIn("差が最も小さいケース", selected)
+
+    def test_summary_markdown_contains_core_table(self):
+        cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
+        selected = select_cases.select_representative_cases(cases)
+        text = select_cases.summary_markdown(
+            selected=selected,
+            node_counts=(3,),
+            trials=3,
+            candidate_limit=20,
+        )
+        self.assertIn("# 代表ケース抽出サマリ", text)
+        self.assertIn("再解釈探索が最も有利なケース", text)
+        self.assertIn("margin", text)
+
+    def test_write_outputs_with_logs(self):
+        cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
+        selected = select_cases.select_representative_cases(cases)
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "summary.md"
+            logs_dir = Path(tmp) / "logs"
+            select_cases.write_outputs(
+                selected=selected,
+                output=output,
+                logs_dir=logs_dir,
+                node_counts=(3,),
+                trials=3,
+                candidate_limit=20,
+            )
+            self.assertTrue(output.exists())
+            self.assertIn("代表ケース", output.read_text(encoding="utf-8"))
+            self.assertTrue(any(logs_dir.glob("*.md")))
+
+
+if __name__ == "__main__":
+    unittest.main()
