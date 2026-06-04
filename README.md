@@ -54,6 +54,7 @@ RIC(W, W') :=
 - 単発ランダム修復、ランダム探索、局所修復探索、再解釈探索の比較
 - 複数 seed / 複数ノード数による小規模バッチ実験
 - 1ケースの変更辺・スコア内訳・局所修復探索の改善過程を読むための説明ログ
+- 1ケース説明ログのMarkdown / JSON出力
 - 代表ケース抽出と代表ケース別の説明ログ生成
 - 代表ケース一覧のMarkdown / JSON出力
 - 代表ケースの `node_count / seed` 重複回避
@@ -67,7 +68,7 @@ RIC(W, W') :=
 python scripts/simulate.py
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200
 python scripts/run_experiments.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --json results/local_experiment.json --csv results/local_experiment.csv
-python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100 --output results/local_explain_trial.md
+python scripts/explain_trial.py --seed 0 --node-count 4 --candidate-limit 100 --output results/local_explain_trial.md --json results/local_explain_trial.json
 python scripts/select_cases.py --nodes 3,4,5 --trials 10 --candidate-limit 200 --output results/representative_cases.md --json results/representative_cases.json --logs-dir results/representative_cases
 python -m unittest discover -s tests
 ```
@@ -88,7 +89,7 @@ python -m unittest discover -s tests
 
 ## 説明ログ
 
-`explain_trial.py` は、1ケースについて次を Markdown で出力します。
+`explain_trial.py` は、1ケースについて次を Markdown / JSON で出力します。
 
 - 教師モデル
 - 初期モデル
