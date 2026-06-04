@@ -133,6 +133,7 @@ python -m unittest discover -s tests
 - [`docs/10_utility_proxy.md`](docs/10_utility_proxy.md): utility_proxy 設計メモ
 - [`docs/11_search_strategy.md`](docs/11_search_strategy.md): 探索方針メモ
 - [`docs/12_explain_trial.md`](docs/12_explain_trial.md): 1ケース説明ログの読み方
+- [`docs/13_select_cases.md`](docs/13_select_cases.md): 代表ケース抽出の読み方
 
 ## CI
 
