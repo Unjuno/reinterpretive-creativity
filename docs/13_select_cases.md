@@ -12,6 +12,7 @@
 - 局所修復探索が比較的有利なケース
 - ランダム探索が比較的有利なケース
 - 各手法の差が小さいケース
+- 同じケースを何度も読まないための重複回避
 
 ## 実行例
 
@@ -29,6 +30,21 @@ python scripts/select_cases.py \
 
 `--json` を指定すると、代表ケース一覧を機械処理しやすいJSON形式でも保存します。
 
+## 重複排除
+
+代表ケースは、可能な限り同じ `node_count / seed` を重複利用しないように選びます。
+
+カテゴリは次の順序で選びます。
+
+1. 再解釈探索が最も有利なケース
+2. 局所修復探索が最も有利なケース
+3. ランダム探索が最も有利なケース
+4. 差が最も小さいケース
+
+後続カテゴリでは、すでに選ばれた `node_count / seed` を避けます。
+
+ただし、候補が足りない場合だけ重複を許容します。その場合は `duplicate_allowed` に `true` が入ります。
+
 ## Markdown出力内容
 
 代表ケースサマリには、次が含まれます。
@@ -36,6 +52,7 @@ python scripts/select_cases.py \
 | 列 | 意味 |
 |---|---|
 | 種類 | どの観点で選ばれた代表ケースか |
+| case_key | `node_count / seed` から作ったケース識別子 |
 | ノード数 | そのケースのノード数 |
 | seed | そのケースのseed |
 | 単発ランダム | 単発ランダム修復のスコア |
@@ -43,6 +60,7 @@ python scripts/select_cases.py \
 | 局所修復 | 局所修復探索のスコア |
 | 再解釈 | 再解釈探索のスコア |
 | margin | 対象手法のスコアから他手法の最大スコアを引いた値 |
+| duplicate_allowed | 候補不足で重複利用を許容したか |
 
 ## JSON出力内容
 
@@ -53,14 +71,17 @@ JSON出力には、次が含まれます。
 | metadata.node_counts | 対象ノード数 |
 | metadata.trials | 各ノード数の試行数 |
 | metadata.candidate_limit | 候補数予算 |
+| metadata.dedupe_key | 重複排除に使うキー |
 | metadata.note | この抽出の注意書き |
 | representative_cases | 抽出された代表ケース一覧 |
 | representative_cases[].label | 代表ケース種別 |
+| representative_cases[].case_key | ケース識別子 |
 | representative_cases[].node_count | ノード数 |
 | representative_cases[].seed | seed |
 | representative_cases[].scores | 各探索手法のスコア |
 | representative_cases[].margin | 対象手法のmargin。差が最も小さいケースでは `null` |
 | representative_cases[].score_spread | そのケース内の最大スコアと最小スコアの差 |
+| representative_cases[].duplicate_allowed | 候補不足で重複利用を許容したか |
 
 ## margin の読み方
 
@@ -88,10 +109,9 @@ margin = score(target_method) - max(score(other_methods))
 
 必要なら、次を追加できます。
 
-- 代表ケースの重複排除
 - ノード数ごとの代表ケース抽出
 - margin閾値による抽出
 - スコア構成要素での代表ケース抽出
 - JSON形式での1ケース説明ログ
 
-ただし、初期MVPでは、Markdownサマリ、JSONサマリ、説明ログ生成に留めます。
+ただし、初期MVPでは、Markdownサマリ、JSONサマリ、説明ログ生成、重複回避に留めます。
