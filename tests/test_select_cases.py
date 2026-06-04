@@ -28,11 +28,33 @@ class TestSelectCases(unittest.TestCase):
         self.assertIn("再解釈探索が最も有利なケース", text)
         self.assertIn("margin", text)
 
-    def test_write_outputs_with_logs(self):
+    def test_representative_cases_json_contains_core_fields(self):
+        cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
+        selected = select_cases.select_representative_cases(cases)
+        data = select_cases.representative_cases_json(
+            selected=selected,
+            node_counts=(3,),
+            trials=3,
+            candidate_limit=20,
+        )
+        self.assertIn("metadata", data)
+        self.assertIn("representative_cases", data)
+        self.assertEqual(data["metadata"]["node_counts"], [3])
+        self.assertEqual(len(data["representative_cases"]), 4)
+        first_case = data["representative_cases"][0]
+        self.assertIn("label", first_case)
+        self.assertIn("node_count", first_case)
+        self.assertIn("seed", first_case)
+        self.assertIn("scores", first_case)
+        self.assertIn("margin", first_case)
+        self.assertIn("score_spread", first_case)
+
+    def test_write_outputs_with_logs_and_json(self):
         cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
         selected = select_cases.select_representative_cases(cases)
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "summary.md"
+            json_output = Path(tmp) / "summary.json"
             logs_dir = Path(tmp) / "logs"
             select_cases.write_outputs(
                 selected=selected,
@@ -41,9 +63,12 @@ class TestSelectCases(unittest.TestCase):
                 node_counts=(3,),
                 trials=3,
                 candidate_limit=20,
+                json_output=json_output,
             )
             self.assertTrue(output.exists())
+            self.assertTrue(json_output.exists())
             self.assertIn("代表ケース", output.read_text(encoding="utf-8"))
+            self.assertIn("representative_cases", json_output.read_text(encoding="utf-8"))
             self.assertTrue(any(logs_dir.glob("*.md")))
 
 
