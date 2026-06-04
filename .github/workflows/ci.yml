@@ -38,11 +38,22 @@ jobs:
             --candidate-limit 100 \
             --output results/ci_explain_trial.md
 
+      - name: Run representative case selection
+        run: |
+          python scripts/select_cases.py \
+            --nodes 3,4 \
+            --trials 3 \
+            --candidate-limit 50 \
+            --output results/ci_representative_cases.md \
+            --logs-dir results/ci_representative_cases
+
       - name: Check generated outputs
         run: |
           test -s results/ci_experiment.json
           test -s results/ci_experiment.csv
           test -s results/ci_explain_trial.md
+          test -s results/ci_representative_cases.md
+          test -n "$(find results/ci_representative_cases -name '*.md' -print -quit)"
 
       - name: Run tests
         run: python -m unittest discover -s tests
