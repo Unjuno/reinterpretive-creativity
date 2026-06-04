@@ -14,6 +14,14 @@ class TestSelectCases(unittest.TestCase):
         self.assertIn("局所修復探索が最も有利なケース", selected)
         self.assertIn("ランダム探索が最も有利なケース", selected)
         self.assertIn("差が最も小さいケース", selected)
+        for value in selected.values():
+            self.assertEqual(len(value), 3)
+
+    def test_representative_cases_avoid_duplicate_keys_when_possible(self):
+        cases = select_cases.collect_cases(node_counts=(3, 4), trials=3, candidate_limit=20)
+        selected = select_cases.select_representative_cases(cases)
+        keys = [case.key for case, _, _ in selected.values()]
+        self.assertEqual(len(keys), len(set(keys)))
 
     def test_summary_markdown_contains_core_table(self):
         cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
@@ -26,7 +34,8 @@ class TestSelectCases(unittest.TestCase):
         )
         self.assertIn("# 代表ケース抽出サマリ", text)
         self.assertIn("再解釈探索が最も有利なケース", text)
-        self.assertIn("margin", text)
+        self.assertIn("case_key", text)
+        self.assertIn("duplicate_allowed", text)
 
     def test_representative_cases_json_contains_core_fields(self):
         cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
@@ -40,14 +49,12 @@ class TestSelectCases(unittest.TestCase):
         self.assertIn("metadata", data)
         self.assertIn("representative_cases", data)
         self.assertEqual(data["metadata"]["node_counts"], [3])
-        self.assertEqual(len(data["representative_cases"]), 4)
+        self.assertEqual(data["metadata"]["dedupe_key"], "node_count/seed")
         first_case = data["representative_cases"][0]
         self.assertIn("label", first_case)
-        self.assertIn("node_count", first_case)
-        self.assertIn("seed", first_case)
+        self.assertIn("case_key", first_case)
         self.assertIn("scores", first_case)
-        self.assertIn("margin", first_case)
-        self.assertIn("score_spread", first_case)
+        self.assertIn("duplicate_allowed", first_case)
 
     def test_write_outputs_with_logs_and_json(self):
         cases = select_cases.collect_cases(node_counts=(3,), trials=3, candidate_limit=20)
