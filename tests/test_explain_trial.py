@@ -30,6 +30,14 @@ class TestExplainTrial(unittest.TestCase):
         self.assertIn("in_out_coverage_score", text)
         self.assertIn("total_score", text)
 
+    def test_explain_case_contains_local_repair_trace(self):
+        text = explain_trial.explain_case(seed=0, node_count=4, candidate_limit=50)
+        self.assertIn("局所修復探索の改善過程", text)
+        self.assertIn("score_before", text)
+        self.assertIn("score_after", text)
+        self.assertIn("best_score", text)
+        self.assertIn("改善", text)
+
     def test_explain_case_can_be_written_to_file(self):
         text = explain_trial.explain_case(seed=1, node_count=3, candidate_limit=20)
         with tempfile.TemporaryDirectory() as tmp:
