@@ -21,4 +21,7 @@ jobs:
       - name: Run demo simulation
         run: python scripts/simulate.py
 
-      -
+      - name: Run batch experiment
+        run: |
+          python scripts/run_experiments.py \
+            --nodes
