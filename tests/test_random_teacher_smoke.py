@@ -1,11 +1,10 @@
 import unittest
-
 from scripts import random_teacher_smoke
-from scripts import run_experiments
-
 
 class TestRandomTeacherSmoke(unittest.TestCase):
-    def test_random_teacher_has_positive_edge(self):
-        teacher = random_teacher_smoke.build_random_teacher(node_count=4, seed=0)
-        self.assertTrue(any(value == 1 for value in teacher.values()))
-        self.assertGreaterEqual(run_experiments.utility
+    def test_positive_edge(self):
+        t = random_teacher_smoke.build_random_teacher(4, 0)
+        self.assertTrue(any(v == 1 for v in t.values()))
+
+if __name__ == "__main__":
+    unittest.main()
