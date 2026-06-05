@@ -24,4 +24,10 @@ jobs:
       - name: Run batch experiment
         run: |
           python scripts/run_experiments.py \
-            --nodes
+            --nodes 3,4,5 \
+            --trials 10 \
+            --candidate-limit 200 \
+            --json results/ci_experiment.json \
+            --csv results/ci_experiment.csv
+
+      - name: Run explain trial
