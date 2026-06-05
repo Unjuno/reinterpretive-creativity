@@ -10,5 +10,4 @@
 
 ## 実行例
 
-```bash
-python scripts/sensitivity_candidate_limit.py --nodes 4,5 --trials 10 --candidate-limits 50,100,200,500 --output results/candidate_limit_sensitivity.md --json results/candidate_limit_sensitivity.json
+`python scripts/sensitivity_candidate_limit.py --nodes 4,5 --trials 10 --candidate-limits 50,100,200,500 --output results/candidate_limit_sensitivity.md --json results/candidate_limit_sensitivity.json --csv results/candidate_limit_sensitivity
