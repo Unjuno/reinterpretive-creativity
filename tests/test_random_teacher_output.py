@@ -1,6 +1,4 @@
-import tempfile
 import unittest
-from pathlib import Path
 
 from scripts import random_teacher_output as r
 
@@ -11,5 +9,6 @@ class TestRandomTeacherOutput(unittest.TestCase):
         keys = {"random_repair", "random_search", "local_repair", "reinterpretation"}
         self.assertEqual(set(data["scores"]), keys)
 
-    def test_write_files(self):
-        data = r
+
+if __name__ == "__main__":
+    unittest.main()
