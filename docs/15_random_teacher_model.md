@@ -27,4 +27,3 @@
 1. `build_random_teacher` を追加する。
 2. `make_noisy_raw_from_teacher` を追加する。
 3. 小さいスモークテストを追加する。
-4. 必要ならCLI化
