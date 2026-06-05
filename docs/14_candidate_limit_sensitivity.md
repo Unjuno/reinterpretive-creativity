@@ -4,27 +4,11 @@
 
 ## 目的
 
-現在の実験では、再解釈探索・ランダム探索・局所修復探索を比較しています。
+固定された探索予算だけで、再解釈探索・ランダム探索・局所修復探索の優劣を判断すると危険です。
 
-ただし、探索手法の強さは `candidate_limit` に依存します。
-
-そのため、固定値だけで結論するのではなく、複数の `candidate_limit` で傾向を確認します。
+この分析では、複数の `candidate_limit` を指定し、探索予算に対するスコア変化を確認します。
 
 ## 実行例
 
 ```bash
-python scripts/sensitivity_candidate_limit.py \
-  --nodes 4,5 \
-  --trials 10 \
-  --candidate-limits 50,100,200,500 \
-  --output results/candidate_limit_sensitivity.md \
-  --json results/candidate_limit_sensitivity.json \
-  --csv results/candidate_limit_sensitivity.csv
-```
-
-## 出力
-
-| 出力 | 内容 |
-|---|---|
-| Markdown | 人間が読むための表 |
-| JSON | 後続ツールで扱うための構造化デ
+python scripts/sensitivity_candidate_limit.py --nodes 4,5 --trials 10 --candidate-limits 50,100,200,500 --output results/candidate_limit_sensitivity.md --json results/candidate_limit_sensitivity.json
