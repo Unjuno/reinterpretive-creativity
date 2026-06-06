@@ -1,15 +1,14 @@
 import argparse
 from pathlib import Path
+
 from scripts import random_teacher_output as r
 
-def main():
-    p=argparse.ArgumentParser()
-    p.add_argument("--seed",type=int,default=0)
-    p.add_argument("--limit",type=int,default=10)
-    p.add_argument("--json",type=Path,default=None)
-    a=p.parse_args()
-    d=r.build(seed=a.seed,limit=a.limit)
-    print(d)
-    if a.json: r.write_json(a.json,d)
 
-if __name__=="__main__": main()
+def main() -> None:
+    parser = argparse.ArgumentParser(description="ランダム教師実験を標準出力に表示する")
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--limit", type=int, default=10)
+    parser.add_argument("--json", type=Path, default=None)
+    args = parser.parse_args()
+
+    data
