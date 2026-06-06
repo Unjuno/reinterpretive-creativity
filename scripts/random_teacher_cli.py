@@ -9,4 +9,6 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--limit", type=int, default=10)
     parser.add_argument("--json", type=Path, default=None)
-    args = parser
+    args = parser.parse_args()
+    data = r.build(seed=args.seed, limit=args.limit)
+    if
