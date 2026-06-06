@@ -11,4 +11,5 @@ def main():
     a = p.parse_args()
     d = r.build(a.seed, a.limit)
     print(d)
-    if a
+    if a.json is not None:
+        r.write_json(a.json, d
