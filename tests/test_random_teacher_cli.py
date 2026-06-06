@@ -14,4 +14,4 @@ class TestRandomTeacherCli(unittest.TestCase):
             text=True,
         )
         self.assertIn("random_repair", result.stdout)
-        self.assert
+        self.assertIn("reinterpret
