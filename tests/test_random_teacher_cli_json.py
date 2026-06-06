@@ -1,12 +1,13 @@
-import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
+from scripts import random_teacher_output as r
 
 
 class TestRandomTeacherCliJson(unittest.TestCase):
-    def test_cli_writes_json(self):
+    def test_write_json(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'out.json'
-            cmd = [sys.executable, 'scripts/random_teacher_cli.py', '--seed', '1', '--limit', '5
+            r.write_json(path, r.build(1, 5))
+            self.assertTrue(path.exists())
+            self.assert
