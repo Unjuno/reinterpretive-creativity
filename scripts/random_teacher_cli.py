@@ -10,7 +10,4 @@ def main():
     a = p.parse_args()
     data = r.build(seed=a.seed, limit=a.limit)
     print(data)
-    if a.json is not None:
-        r.write_json(a.json, data)
-
-if __name__ == '__main__':
+    if a.json is
