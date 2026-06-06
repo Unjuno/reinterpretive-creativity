@@ -1,8 +1,6 @@
 import subprocess
 import sys
-import tempfile
 import unittest
-from pathlib import Path
 
 
 class TestRandomTeacherCli(unittest.TestCase):
@@ -14,4 +12,8 @@ class TestRandomTeacherCli(unittest.TestCase):
             text=True,
         )
         self.assertIn("random_repair", result.stdout)
-        self.assertIn("reinterpret
+        self.assertIn("reinterpretation", result.stdout)
+
+
+if __name__ == "__main__":
+    unittest.main()
