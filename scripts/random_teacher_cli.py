@@ -9,11 +9,14 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--limit", type=int, default=10)
     parser.add_argument("--json", type=Path, default=None)
+    parser.add_argument("--md", type=Path, default=None)
     args = parser.parse_args()
     data = r.build(seed=args.seed, limit=args.limit)
     print(data)
     if args.json is not None:
         r.write_json(args.json, data)
+    if args.md is not None:
+        r.write_markdown(args.md, data)
 
 
 if __name__ == "__main__":
