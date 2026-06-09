@@ -4,7 +4,7 @@ This document closes Phase 1 of the reinterpretive creativity model.
 
 ## Status
 
-Phase 1 is complete.
+Phase 1 is complete for the current scope.
 
 The project now has:
 
@@ -12,15 +12,15 @@ The project now has:
 - formal assumptions,
 - closure criteria,
 - an experiment matrix,
-- a minimal experiment result.
+- a minimal experimental run.
 
-This does not mean that creativity in general has been explained or proven. It means that the limited model has reached a stable closure point.
+This does not mean that creativity in general has been explained or proven. It means that the limited graph-based model has reached a stable closure point for its first phase.
 
 ## Summary
 
 This project does not attempt to explain or prove creativity in general.
 
-Its scope is limited. It studies cases where an internally inconsistent artificial world model can be transformed into a coherent, different, and structurally valuable alternative model through reinterpretation.
+Its scope is limited. It studies cases where an internally inconsistent artificial world model can be transformed into a coherent and different alternative model through reinterpretation, evaluated by structural proxy measures.
 
 A world model is represented as a signed directed graph. Nodes represent abstract elements. Directed edges represent relations between elements. Edge signs represent positive or negative relations.
 
@@ -30,11 +30,11 @@ Repair is an operation that reduces inconsistency while staying close to the sta
 
 The current evaluation uses distance, preservation, utility_proxy, and aggregate score. The utility_proxy is not a model of human value judgment. It is only a structural measurement proxy.
 
-The minimal experiment showed that reinterpretation search performs strongly in smaller graph settings. However, when the graph becomes larger, the result becomes unstable, and reinterpretation often loses to random search or local repair.
+The minimal experiment showed that reinterpretation search obtains higher scores in smaller graph settings. However, when the graph becomes larger, the result becomes unstable, and reinterpretation often loses to random search or local repair.
 
-Therefore, the project does not support the claim that reinterpretation search is always superior. The supported claim is narrower: reinterpretation search can be useful under specific structural conditions.
+Therefore, the project does not support the claim that reinterpretation search is always superior. The narrower supported claim is that reinterpretation search can be effective under specific structural conditions.
 
-At this point, Phase 1 is complete. The model definition, formal assumptions, remaining uncertainties, experiment matrix, and minimal experimental results are in place. Further work would belong to a new phase, including broader experiments, score-design validation, teacher-model bias checks, and possible paper development.
+At this point, Phase 1 is complete for the current scope. The model definition, formal assumptions, remaining uncertainties, experiment matrix, and minimal experimental results are in place. Further work would belong to a new phase, including broader experiments, score-design validation, teacher-model bias checks, and possible paper development.
 
 ## Minimal experiment
 
@@ -56,17 +56,17 @@ The results were:
 
 ## Interpretation
 
-The model has a bounded signal.
+The model shows a bounded signal in the current minimal experiment.
 
-Reinterpretation search works well in smaller graph settings. It becomes unstable in larger graph settings and can lose to random search or local repair.
+Reinterpretation search scores well in smaller graph settings. It becomes unstable in larger graph settings and can lose to random search or local repair.
 
-This is a useful result because it identifies a boundary condition. The model should be treated as a limited structural model, not a general theory of creativity.
+This identifies a boundary condition. The model should be treated as a limited structural model, not a general theory of creativity.
 
 ## Closure decision
 
-Phase 1 is closed.
+Phase 1 is closed for the current scope.
 
-No more work is required for this phase.
+No additional work is required to close this phase.
 
 Further work should be treated as Phase 2, not as unfinished Phase 1 work.
 
