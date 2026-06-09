@@ -2,7 +2,7 @@
 
 This project studies a limited model of reinterpretive creativity.
 
-It does not claim to explain creativity in general. It models cases where an internally inconsistent world model can be transformed into a coherent, different, and structurally valuable alternative model.
+It does not claim to explain creativity in general. It models cases where an internally inconsistent world model can be transformed into a coherent, different alternative model evaluated by structural proxy measures.
 
 ## Target
 
