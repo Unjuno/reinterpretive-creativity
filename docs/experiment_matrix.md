@@ -1,6 +1,6 @@
 # Experiment Matrix
 
-This document defines the minimum experiment matrix for the next phase of the reinterpretive creativity model.
+This document defines the experiment matrix for the empirical phase of the reinterpretive creativity model.
 
 An experiment matrix specifies what varies, what is measured, and how outcomes are interpreted. It is not a user interface or a CLI feature.
 
@@ -26,7 +26,7 @@ Q5. Are apparent wins stable, or are they artifacts of the scoring rule or exper
 
 The minimum comparison set is:
 
-- simple repair,
+- simple repair or random repair,
 - random search,
 - local repair,
 - reinterpretation search.
@@ -35,7 +35,7 @@ No method is assumed to be the true winner in advance.
 
 ## Matrix dimensions
 
-The minimum matrix should vary the following dimensions.
+The full empirical matrix should vary the following dimensions.
 
 | Dimension | Minimal levels | Purpose |
 | --- | --- | --- |
@@ -76,13 +76,24 @@ It should run:
 1. A small smoke matrix using a few seeds and the current default graph settings.
 2. A baseline matrix comparing all methods over a larger seed range.
 3. A loss-case extraction for reinterpretation failures.
-4. A breakdown-gap report for selected cases.
+4. A breakdown-gap report for selected cases when available.
 
-This is enough to decide whether the model has empirical traction before expanding the matrix.
+This is enough to decide whether the model has bounded empirical traction before expanding the matrix.
 
-## Closure condition for the experiment phase
+## Current-scope closure
 
-The experiment phase can close when the project can state:
+A current-scope closure can be reached after a minimal experimental run, if the project can state:
+
+- where reinterpretation scores well,
+- where it loses or becomes unstable,
+- which results remain unresolved,
+- which assumptions or metrics need later revision.
+
+This current-scope closure is weaker than a full empirical phase closure.
+
+## Full empirical phase closure
+
+The full empirical phase can close when the project can state, after broader matrix execution:
 
 - where reinterpretation tends to win,
 - where it tends to lose,
@@ -90,4 +101,4 @@ The experiment phase can close when the project can state:
 - which results are unstable or likely artifacts,
 - which assumptions need revision.
 
-If these statements cannot be made after running the matrix, the model remains defined but empirically unresolved.
+If these statements cannot be made after running the full matrix, the model remains empirically unresolved beyond the current scope.
