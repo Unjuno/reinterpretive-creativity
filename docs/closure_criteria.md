@@ -1,6 +1,6 @@
 # Closure Criteria
 
-This document defines what counts as sufficient closure for the current phase of the reinterpretive creativity model.
+This document defines what counts as sufficient closure for the current scope of the reinterpretive creativity model.
 
 Closure does not mean proving creativity in general. It means reaching a stable, limited research model with explicit definitions, assumptions, tests, and remaining uncertainties.
 
@@ -30,33 +30,39 @@ The current model does not yet settle:
 
 These unknowns are part of the research target, not defects to hide.
 
-## Minimum closure for this phase
+## Minimum closure for the current scope
 
-This phase can be considered closed when the project has:
+The current scope can be considered closed when the project has:
 
 1. A stable model core document.
 2. A stable formal assumptions document.
-3. A defined experiment matrix for seeds, node counts, candidate limits, and teacher-model variants.
-4. A baseline comparison table covering reinterpretation, local repair, random search, and simple repair.
-5. A loss-case analysis showing where reinterpretation fails.
-6. A breakdown analysis showing which score components explain observed gaps as measurement material.
+3. A written closure criteria document.
+4. A defined experiment matrix for the next empirical phase.
+5. A minimal experimental run that compares reinterpretation, local repair, random search, and simple repair or random repair.
+6. A recorded statement of where reinterpretation wins, loses, or becomes unstable in that minimal run.
 7. A written statement of non-claims and remaining uncertainties.
 
-## Not required for closure
+This is a current-scope closure condition. It is not the closure condition for a full empirical experiment phase.
 
-The following are not required for this phase:
+## Not required for current-scope closure
+
+The following are not required to close the current scope:
 
 - proving creativity itself,
 - modeling human value judgment,
 - generating natural-language causal explanations,
 - showing that reinterpretation always wins,
+- executing the full experiment matrix,
+- completing a full score-component dominance analysis,
 - building a polished CLI or user-facing interface,
 - generalizing beyond the artificial graph setting.
 
-## Next required document
+## Full empirical phase
 
-The next central document should be an experiment matrix.
+The full empirical phase would require broader execution of the experiment matrix, including systematic seed sensitivity, candidate-limit sensitivity, teacher-model variants, loss-case analysis, and breakdown analysis.
 
-It should specify which parameters are varied, which metrics are observed, and what outcomes count as support, failure, or uncertainty.
+Those tasks should be treated as Phase 2 work. They are not unfinished requirements for the current Phase 1 closure.
 
-Until that matrix exists, the model is defined but not yet empirically closed.
+## Current status
+
+After the experiment matrix and minimal experimental run exist, the model is no longer merely defined. It is closed for the current scope, with bounded empirical evidence and explicit remaining uncertainties.
