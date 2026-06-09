@@ -37,7 +37,7 @@ The current scope can be considered closed when the project has:
 1. A stable model core document.
 2. A stable formal assumptions document.
 3. A written closure criteria document.
-4. A defined experiment matrix for the next empirical phase.
+4. A defined experiment matrix for the empirical phase.
 5. A minimal experimental run that compares reinterpretation, local repair, random search, and simple repair or random repair.
 6. A recorded statement of where reinterpretation wins, loses, or becomes unstable in that minimal run.
 7. A written statement of non-claims and remaining uncertainties.
