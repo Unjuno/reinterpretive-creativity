@@ -2,11 +2,11 @@
 
 This document closes Phase 1 of the reinterpretive creativity model.
 
-この文書は、再解釈型創造性モデルの第1フェーズを閉じるための最終整理である。
+この文書は、再解釈型創造性モデルの第1フェーズを閉じるための整理である。
 
 ## Status
 
-Phase 1 is complete.
+Phase 1 is complete for the current scope.
 
 The project now has:
 
@@ -14,15 +14,15 @@ The project now has:
 - formal assumptions,
 - closure criteria,
 - an experiment matrix,
-- a minimal experiment result.
+- a minimal experimental run.
 
-This does not mean that creativity in general has been explained or proven. It means that the limited model has reached a stable closure point.
+This does not mean that creativity in general has been explained or proven. It means that the limited graph-based model has reached a stable closure point for its first phase.
 
 ## Japanese summary
 
 本プロジェクトは、創造性一般を説明または証明するものではない。
 
-対象は限定的である。内部不整合を持つ人工的なワールドモデルが、より整合的で、元のモデルとは異なり、構造的 proxy によって評価される代替モデルへ再解釈される場合を扱う。
+対象は限定的である。内部不整合を持つ人工的なワールドモデルが、より整合的で、元のモデルとは異なる代替モデルへ再解釈される場合を、構造的 proxy によって評価する。
 
 ワールドモデルは符号付き有向グラフとして表現される。ノードは抽象的要素、辺は要素間の関係、符号は肯定または否定の関係を表す。
 
@@ -32,17 +32,17 @@ This does not mean that creativity in general has been explained or proven. It m
 
 評価には、distance、preservation、utility_proxy、aggregate score を用いる。ただし、utility_proxy は人間の価値判断ではなく、構造的な測定 proxy である。
 
-最小実験では、再解釈探索は小さいグラフ設定では強い結果を示した。一方、グラフが大きくなると不安定になり、random search や local repair に負ける条件が現れた。
+最小実験では、再解釈探索は小さいグラフ設定で高い score を示した。一方、グラフが大きくなると結果は不安定になり、random search や local repair に負ける条件が現れた。
 
-したがって、本モデルは「再解釈探索が常に優れている」という主張を支持しない。支持されるのは、再解釈探索が一定条件下で有効になりうるという限定的な主張である。
+したがって、本モデルは「再解釈探索が常に優れている」という主張を支持しない。現時点で支持できるのは、再解釈探索が特定の構造条件下で有効になりうるという限定的な主張である。
 
-この時点で、第1フェーズは完了とする。モデル定義、形式的前提、未解決点、実験マトリクス、最小実験結果は揃った。次に進む場合は、本格的な実験拡張、score 設計の検証、teacher-model bias の検査、論文化が次フェーズとなる。
+この時点で、第1フェーズは現在の範囲において完了とする。モデル定義、形式的前提、未解決点、実験マトリクス、最小実験結果は揃った。次に進む場合は、本格的な実験拡張、score 設計の検証、teacher-model bias の検査、論文化が次フェーズとなる。
 
 ## English summary
 
 This project does not attempt to explain or prove creativity in general.
 
-Its scope is limited. It studies cases where an internally inconsistent artificial world model can be transformed into a coherent, different, and structurally valuable alternative model through reinterpretation.
+Its scope is limited. It studies cases where an internally inconsistent artificial world model can be transformed into a coherent and different alternative model through reinterpretation, evaluated by structural proxy measures.
 
 A world model is represented as a signed directed graph. Nodes represent abstract elements. Directed edges represent relations between elements. Edge signs represent positive or negative relations.
 
@@ -52,11 +52,11 @@ Repair is an operation that reduces inconsistency while staying close to the sta
 
 The current evaluation uses distance, preservation, utility_proxy, and aggregate score. The utility_proxy is not a model of human value judgment. It is only a structural measurement proxy.
 
-The minimal experiment showed that reinterpretation search performs strongly in smaller graph settings. However, when the graph becomes larger, the result becomes unstable, and reinterpretation often loses to random search or local repair.
+The minimal experiment showed that reinterpretation search obtains higher scores in smaller graph settings. However, when the graph becomes larger, the result becomes unstable, and reinterpretation often loses to random search or local repair.
 
-Therefore, the project does not support the claim that reinterpretation search is always superior. The supported claim is narrower: reinterpretation search can be useful under specific structural conditions.
+Therefore, the project does not support the claim that reinterpretation search is always superior. The narrower supported claim is that reinterpretation search can be effective under specific structural conditions.
 
-At this point, Phase 1 is complete. The model definition, formal assumptions, remaining uncertainties, experiment matrix, and minimal experimental results are in place. Further work would belong to a new phase, including broader experiments, score-design validation, teacher-model bias checks, and possible paper development.
+At this point, Phase 1 is complete for the current scope. The model definition, formal assumptions, remaining uncertainties, experiment matrix, and minimal experimental results are in place. Further work would belong to a new phase, including broader experiments, score-design validation, teacher-model bias checks, and possible paper development.
 
 ## Minimal experiment
 
@@ -78,17 +78,17 @@ The results were:
 
 ## Interpretation
 
-The model has a bounded signal.
+The model shows a bounded signal in the current minimal experiment.
 
-Reinterpretation search works well in smaller graph settings. It becomes unstable in larger graph settings and can lose to random search or local repair.
+Reinterpretation search scores well in smaller graph settings. It becomes unstable in larger graph settings and can lose to random search or local repair.
 
-This is a useful result because it identifies a boundary condition. The model should be treated as a limited structural model, not a general theory of creativity.
+This identifies a boundary condition. The model should be treated as a limited structural model, not a general theory of creativity.
 
 ## Closure decision
 
-Phase 1 is closed.
+Phase 1 is closed for the current scope.
 
-No more work is required for this phase.
+No additional work is required to close this phase.
 
 Further work should be treated as Phase 2, not as unfinished Phase 1 work.
 
