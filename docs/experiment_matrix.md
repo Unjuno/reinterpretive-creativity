@@ -211,6 +211,46 @@ Interpretation constraints:
 - It does not introduce human-value, social-value, aesthetic-value, or scientific-value claims.
 - It does not close the full empirical phase.
 
+## Phase 2 general random graph teacher suite
+
+A general random graph teacher suite has been recorded in:
+
+- `scripts/general_random_teacher.py`
+- `tests/test_general_random_teacher.py`
+- `results/phase2_general_random_teacher_suite.md`
+- `results/phase2_general_random_teacher_suite.csv`
+- `results/phase2_general_random_teacher_suite.json`
+
+Executed suite condition:
+
+| Dimension | Executed levels |
+| --- | --- |
+| seed range | 0-29 |
+| trial count | 30 per condition |
+| graph size | node_count 4 |
+| positive_edge_count | 4 |
+| candidate_limit | 20, 50, 100 |
+| teacher models | fixed_cycle; random_graph_p4 |
+| methods | random_repair, random_search, local_repair, reinterpretation |
+
+Key results:
+
+| teacher_model | candidate_limit | avg_raw_edges | reinterpretation_mean | tied_win_rate | strict_win_rate | loss_count |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed_cycle | 20 | 5.966667 | 0.436822 | 0.500000 | 0.466667 | 15 |
+| random_graph_p4 | 20 | 6.133333 | 0.405450 | 0.300000 | 0.266667 | 21 |
+| fixed_cycle | 50 | 5.966667 | 0.455181 | 0.133333 | 0.133333 | 26 |
+| random_graph_p4 | 50 | 6.133333 | 0.435825 | 0.100000 | 0.100000 | 27 |
+| fixed_cycle | 100 | 5.966667 | 0.473648 | 0.000000 | 0.000000 | 30 |
+| random_graph_p4 | 100 | 6.133333 | 0.459629 | 0.000000 | 0.000000 | 30 |
+
+Interpretation constraints:
+
+- This suite adds a generated random graph teacher with controlled positive-edge count.
+- It reduces the raw-size confound of the single-positive-edge smoke path, but it does not complete teacher-model bias inspection.
+- It does not introduce human-value, social-value, aesthetic-value, or scientific-value claims.
+- It does not close the full empirical phase.
+
 ## Phase 2 preservation/novelty tradeoff note
 
 A preservation/novelty tradeoff note has been recorded in `results/phase2_preservation_novelty_tradeoff.md`.
