@@ -114,6 +114,37 @@ Interpretation constraints:
 - Breakdown differences are descriptive measurement results, not causal explanations.
 - Phase 1 remains closed for the current scope.
 
+## Phase 2 random-teacher smoke
+
+A separate random-teacher smoke has been recorded in `results/phase2_random_teacher_smoke.md`.
+
+Executed smoke condition:
+
+| Dimension | Executed levels |
+| --- | --- |
+| seed range | 0-2 |
+| trial count | 3 smoke seeds |
+| graph size | node_count 4 |
+| candidate_limit | 20 |
+| teacher model | single-positive-edge random-teacher smoke |
+| methods | random_repair, random_search, local_repair, reinterpretation |
+
+Mean scores:
+
+| method | mean_score |
+| --- | ---: |
+| random_repair | 0.000000 |
+| random_search | 0.449826 |
+| local_repair | 0.097222 |
+| reinterpretation | 0.121875 |
+
+Interpretation constraints:
+
+- This smoke does not complete teacher-model bias inspection.
+- The current random-teacher implementation is not yet a general random graph teacher generator.
+- The result only positions the existing smoke path and records a minimal output.
+- `utility_proxy` remains a structural proxy.
+
 ## Current-scope closure
 
 A current-scope closure can be reached after a minimal experimental run, if the project can state:
