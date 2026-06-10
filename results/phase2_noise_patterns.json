@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "phase": "Phase 2 noise-pattern minicheck",
+    "source": "existing noisy_case(seed, node_count, conflict_rate, extra_positive_rate)",
+    "node_count": 4,
+    "candidate_limit": 50,
+    "seeds": "0-29",
+    "trials_per_pattern": 30,
+    "methods": [
+      "random_repair",
+      "random_search",
+      "local_repair",
+      "reinterpretation"
+    ],
+    "note": "This is a small grid over existing noise parameters, not a new noise model and not full empirical phase closure. utility_proxy remains a structural proxy."
+  },
+  "patterns": [
+    {
+      "noise_pattern": "baseline_current",
+      "conflict_rate": 0.35,
+      "extra_positive_rate": 0.25,
+      "avg_raw_edges": 5.966667,
+      "avg_conflict_edges": 1.800000,
+      "avg_singleton_positive_edges": 4.166667,
+      "random_repair_mean": 0.216319,
+      "random_search_mean": 0.512251,
+      "local_repair_mean": 0.458421,
+      "reinterpretation_mean": 0.455181,
+      "tied_win_rate": 0.133333,
+      "strict_win_rate": 0.133333,
+      "loss_count": 26
+    },
+    {
+      "noise_pattern": "conflict_light",
+      "conflict_rate": 0.10,
+      "extra_positive_rate": 0.25,
+      "avg_raw_edges": 5.966667,
+      "avg_conflict_edges": 1.033333,
+      "avg_singleton_positive_edges": 4.933333,
+      "random_repair_mean": 0.182031,
+      "random_search_mean": 0.460562,
+      "local_repair_mean": 0.390259,
+      "reinterpretation_mean": 0.400409,
+      "tied_win_rate": 0.166667,
+      "strict_win_rate": 0.133333,
+      "loss_count": 25
+    },
+    {
+      "noise_pattern": "conflict_heavy",
+      "conflict_rate": 0.70,
+      "extra_positive_rate": 0.25,
+      "avg_raw_edges": 5.966667,
+      "avg_conflict_edges": 3.166667,
+      "avg_singleton_positive_edges": 2.800000,
+      "random_repair_mean": 0.267622,
+      "random_search_mean": 0.591386,
+      "local_repair_mean": 0.546642,
+      "reinterpretation_mean": 0.531181,
+      "tied_win_rate": 0.166667,
+      "strict_win_rate": 0.100000,
+      "loss_count": 25
+    },
+    {
+      "noise_pattern": "extra_positive_light",
+      "conflict_rate": 0.35,
+      "extra_positive_rate": 0.05,
+      "avg_raw_edges": 4.300000,
+      "avg_conflict_edges": 1.800000,
+      "avg_singleton_positive_edges": 2.500000,
+      "random_repair_mean": 0.103600,
+      "random_search_mean": 0.537578,
+      "local_repair_mean": 0.366073,
+      "reinterpretation_mean": 0.405981,
+      "tied_win_rate": 0.066667,
+      "strict_win_rate": 0.033333,
+      "loss_count": 28
+    },
+    {
+      "noise_pattern": "extra_positive_heavy",
+      "conflict_rate": 0.35,
+      "extra_positive_rate": 0.60,
+      "avg_raw_edges": 8.700000,
+      "avg_conflict_edges": 1.800000,
+      "avg_singleton_positive_edges": 6.900000,
+      "random_repair_mean": 0.339549,
+      "random_search_mean": 0.441920,
+      "local_repair_mean": 0.529257,
+      "reinterpretation_mean": 0.509525,
+      "tied_win_rate": 0.333333,
+      "strict_win_rate": 0.166667,
+      "loss_count": 20
+    },
+    {
+      "noise_pattern": "combined_high_noise",
+      "conflict_rate": 0.70,
+      "extra_positive_rate": 0.60,
+      "avg_raw_edges": 8.700000,
+      "avg_conflict_edges": 3.166667,
+      "avg_singleton_positive_edges": 5.533333,
+      "random_repair_mean": 0.434236,
+      "random_search_mean": 0.527893,
+      "local_repair_mean": 0.685429,
+      "reinterpretation_mean": 0.611583,
+      "tied_win_rate": 0.100000,
+      "strict_win_rate": 0.033333,
+      "loss_count": 27
+    }
+  ]
+}

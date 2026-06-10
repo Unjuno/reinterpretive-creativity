@@ -65,7 +65,7 @@ A condition supports the model when reinterpretation outperforms baselines and t
 
 A condition weakens the model when reinterpretation repeatedly loses in settings where it was expected to help.
 
-A condition is uncertain when differences are small, unstable, or dominated by artifacts such as score design, candidate-limit effects, or teacher-model bias.
+A condition is uncertain when differences are small, unstable, or dominated by artifacts such as score design, candidate-limit effects, teacher-model bias, or noise-pattern sensitivity.
 
 ## Minimum executable phase
 
@@ -227,6 +227,51 @@ Interpretation constraints:
 
 - This is a group-mean minicheck, not full utility_proxy robustness validation.
 - It does not show that the current utility_proxy is correct.
+- It does not introduce human-value, social-value, aesthetic-value, or scientific-value claims.
+- It does not close the full empirical phase.
+
+## Phase 2 noise-pattern minicheck
+
+A noise-pattern minicheck has been recorded in:
+
+- `results/phase2_noise_patterns.md`
+- `results/phase2_noise_patterns.csv`
+- `results/phase2_noise_patterns.json`
+
+This minicheck uses the existing `noisy_case` parameters:
+
+| parameter | meaning |
+| --- | --- |
+| conflict_rate | probability of adding `-1` to a teacher-positive edge already containing `{1}` |
+| extra_positive_rate | probability of adding `{1}` to a teacher-nonpositive edge |
+
+Executed condition:
+
+| Dimension | Executed levels |
+| --- | --- |
+| seed range | 0-29 |
+| trial count | 30 per noise pattern |
+| graph size | node_count 4 |
+| candidate_limit | 50 |
+| teacher model | fixed cycle teacher |
+| methods | random_repair, random_search, local_repair, reinterpretation |
+
+Key pattern-level results:
+
+| noise_pattern | conflict_rate | extra_positive_rate | reinterpretation_mean | tied_win_rate | loss_count |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| baseline_current | 0.35 | 0.25 | 0.455181 | 0.133333 | 26 |
+| conflict_light | 0.10 | 0.25 | 0.400409 | 0.166667 | 25 |
+| conflict_heavy | 0.70 | 0.25 | 0.531181 | 0.166667 | 25 |
+| extra_positive_light | 0.35 | 0.05 | 0.405981 | 0.066667 | 28 |
+| extra_positive_heavy | 0.35 | 0.60 | 0.509525 | 0.333333 | 20 |
+| combined_high_noise | 0.70 | 0.60 | 0.611583 | 0.100000 | 27 |
+
+Interpretation constraints:
+
+- This is a small fixed-grid minicheck, not a full noise-pattern robustness validation.
+- It does not add a new noise generator.
+- It does not show that any noise pattern is more realistic.
 - It does not introduce human-value, social-value, aesthetic-value, or scientific-value claims.
 - It does not close the full empirical phase.
 
