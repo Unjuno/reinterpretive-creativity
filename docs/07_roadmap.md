@@ -43,12 +43,13 @@ Phase 1 の closure は、full empirical phase の完了を意味しません。
 
 目的: current-scope closure で得られた bounded signal を、より広い実験マトリクスで検査する。
 
-状態: mini-start、random-teacher smoke 整理、teacher-model bias minicheck、teacher-model bias suite、保存度と新規性のトレードオフ整理、複数 utility_proxy minicheck、noise-pattern minicheck を実施済み。ただし full empirical phase は未完了。
+状態: mini-start、random-teacher smoke 整理、teacher-model bias minicheck、teacher-model bias suite、general random graph teacher suite、保存度と新規性のトレードオフ整理、複数 utility_proxy minicheck、noise-pattern minicheck を実施済み。ただし full empirical phase は未完了。
 
 候補作業:
 
 - [x] candidate_limit 感度分析
 - [x] ランダム生成された教師モデルの追加または再整理
+- [x] Generate Random Graph Teacher
 - [x] ノイズ注入パターンの最小検査
 - [ ] ノイズ注入パターンの本検査
 - [x] 保存度と新規性のトレードオフ整理
@@ -82,6 +83,14 @@ teacher-model bias suite 出力:
 - `results/phase2_teacher_bias_suite.csv`
 - `results/phase2_teacher_bias_suite.json`
 
+general random graph teacher suite 出力:
+
+- `scripts/general_random_teacher.py`
+- `tests/test_general_random_teacher.py`
+- `results/phase2_general_random_teacher_suite.md`
+- `results/phase2_general_random_teacher_suite.csv`
+- `results/phase2_general_random_teacher_suite.json`
+
 保存度と新規性のトレードオフ整理:
 
 - `results/phase2_preservation_novelty_tradeoff.md`
@@ -101,6 +110,8 @@ noise-pattern minicheck 出力:
 teacher-model bias minicheck は本検査完了ではありません。現時点では fixed cycle teacher と single-positive-edge random-teacher smoke を小さい同一条件で比較し、teacher construction が score pattern に影響しうることを記録しただけです。
 
 teacher-model bias suite は、fixed cycle teacher と既存 single-positive-edge random-teacher smoke を seed 0-29、candidate_limit 20/50 で比較した小規模拡張です。random teacher はまだ general random graph teacher ではなく、raw-edge count の差も大きいため、本検査完了ではありません。
+
+general random graph teacher suite は、positive edge count を制御できる random directed graph teacher を追加し、fixed cycle teacher と raw-edge count が近い条件で比較したものです。single-positive-edge smoke の raw-size confound を減らすための中間検査であり、teacher-model bias の本検査完了ではありません。
 
 保存度と新規性のトレードオフ整理は、既存 Phase 2 breakdown 結果の解釈整理です。新しい score function や追加実験ではありません。
 
