@@ -1,0 +1,5 @@
+teacher_model,candidate_limit,node_count,trials,avg_raw_edges,avg_conflict_edges,avg_singleton_positive_edges,random_repair_mean,random_search_mean,local_repair_mean,reinterpretation_mean,random_repair_median,random_search_median,local_repair_median,reinterpretation_median,tied_win_rate,strict_win_rate,loss_count,reinterpretation_mean_delta_vs_fixed_cycle
+fixed_cycle,20,4,30,5.966667,1.800000,4.166667,0.216319,0.436625,0.341649,0.436822,0.214062,0.399132,0.335938,0.433490,0.500000,0.466667,15,0.000000
+random_single_positive_edge,20,4,30,1.000000,0.500000,0.500000,0.000000,0.332830,0.071319,0.148194,0.000000,0.275000,0.062500,0.060937,0.500000,0.000000,15,-0.288627
+fixed_cycle,50,4,30,5.966667,1.800000,4.166667,0.216319,0.512251,0.458421,0.455181,0.214062,0.481250,0.453795,0.433490,0.133333,0.133333,26,0.000000
+random_single_positive_edge,50,4,30,1.000000,0.500000,0.500000,0.000000,0.356597,0.152257,0.181997,0.000000,0.307292,0.122656,0.157292,0.500000,0.000000,15,-0.273185
