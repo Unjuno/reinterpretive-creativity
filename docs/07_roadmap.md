@@ -43,7 +43,7 @@ Phase 1 の closure は、full empirical phase の完了を意味しません。
 
 目的: current-scope closure で得られた bounded signal を、より広い実験マトリクスで検査する。
 
-状態: mini-start と random-teacher smoke 整理を実施済み。ただし full empirical phase は未完了。
+状態: mini-start、random-teacher smoke 整理、teacher-model bias minicheck を実施済み。ただし full empirical phase は未完了。
 
 候補作業:
 
@@ -52,7 +52,8 @@ Phase 1 の closure は、full empirical phase の完了を意味しません。
 - [ ] ノイズ注入パターンの追加
 - [ ] 保存度と新規性のトレードオフ整理
 - [ ] 複数 utility_proxy の比較
-- [ ] teacher-model bias の検査
+- [x] teacher-model bias の最小検査
+- [ ] teacher-model bias の本検査
 - [x] loss-case analysis の拡張
 - [x] breakdown analysis の拡張
 
@@ -68,7 +69,11 @@ random-teacher smoke 整理済み出力:
 - `docs/15_random_teacher_model.md`
 - `results/phase2_random_teacher_smoke.md`
 
-random-teacher smoke は teacher-model bias の検査完了ではありません。現時点では single-positive-edge random-teacher smoke の位置づけと最小結果を記録しただけです。
+teacher-model bias minicheck 出力:
+
+- `results/phase2_teacher_bias_minicheck.md`
+
+teacher-model bias minicheck は本検査完了ではありません。現時点では fixed cycle teacher と single-positive-edge random-teacher smoke を小さい同一条件で比較し、teacher construction が score pattern に影響しうることを記録しただけです。
 
 これらは current Phase 1 の未完了作業ではありません。Phase 2 として扱います。
 

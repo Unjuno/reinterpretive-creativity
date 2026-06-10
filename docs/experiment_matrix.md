@@ -145,6 +145,36 @@ Interpretation constraints:
 - The result only positions the existing smoke path and records a minimal output.
 - `utility_proxy` remains a structural proxy.
 
+## Phase 2 teacher-model bias minicheck
+
+A minimal teacher-model comparison has been recorded in `results/phase2_teacher_bias_minicheck.md`.
+
+Executed minicheck condition:
+
+| Dimension | Executed levels |
+| --- | --- |
+| seed range | 0-2 |
+| trial count | 3 seeds per teacher model |
+| graph size | node_count 4 |
+| candidate_limit | 20 |
+| teacher models | fixed cycle teacher; single-positive-edge random-teacher smoke |
+| methods | random_repair, random_search, local_repair, reinterpretation |
+
+Mean scores:
+
+| teacher_model | random_repair_mean | random_search_mean | local_repair_mean | reinterpretation_mean |
+| --- | ---: | ---: | ---: | ---: |
+| fixed_cycle | 0.150694 | 0.521528 | 0.238542 | 0.374306 |
+| random_single_positive_edge | 0.000000 | 0.449826 | 0.097222 | 0.121875 |
+
+Interpretation constraints:
+
+- This minicheck suggests teacher construction can materially affect the observed score pattern.
+- It does not complete teacher-model bias inspection.
+- It does not replace a larger fixed/random teacher suite.
+- It does not close the full empirical phase.
+- `utility_proxy` remains a structural proxy.
+
 ## Current-scope closure
 
 A current-scope closure can be reached after a minimal experimental run, if the project can state:
