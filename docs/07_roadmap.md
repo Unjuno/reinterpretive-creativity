@@ -43,7 +43,7 @@ Phase 1 の closure は、full empirical phase の完了を意味しません。
 
 目的: current-scope closure で得られた bounded signal を、より広い実験マトリクスで検査する。
 
-状態: mini-start、random-teacher smoke 整理、teacher-model bias minicheck、保存度と新規性のトレードオフ整理を実施済み。ただし full empirical phase は未完了。
+状態: mini-start、random-teacher smoke 整理、teacher-model bias minicheck、保存度と新規性のトレードオフ整理、複数 utility_proxy minicheck を実施済み。ただし full empirical phase は未完了。
 
 候補作業:
 
@@ -51,7 +51,8 @@ Phase 1 の closure は、full empirical phase の完了を意味しません。
 - [x] ランダム生成された教師モデルの追加または再整理
 - [ ] ノイズ注入パターンの追加
 - [x] 保存度と新規性のトレードオフ整理
-- [ ] 複数 utility_proxy の比較
+- [x] 複数 utility_proxy の最小比較
+- [ ] 複数 utility_proxy の本比較
 - [x] teacher-model bias の最小検査
 - [ ] teacher-model bias の本検査
 - [x] loss-case analysis の拡張
@@ -77,9 +78,17 @@ teacher-model bias minicheck 出力:
 
 - `results/phase2_preservation_novelty_tradeoff.md`
 
+utility_proxy minicheck 出力:
+
+- `results/phase2_utility_proxy_comparison.md`
+- `results/phase2_utility_proxy_comparison.csv`
+- `results/phase2_utility_proxy_comparison.json`
+
 teacher-model bias minicheck は本検査完了ではありません。現時点では fixed cycle teacher と single-positive-edge random-teacher smoke を小さい同一条件で比較し、teacher construction が score pattern に影響しうることを記録しただけです。
 
 保存度と新規性のトレードオフ整理は、既存 Phase 2 breakdown 結果の解釈整理です。新しい score function や追加実験ではありません。
+
+utility_proxy minicheck は、既存 breakdown component 平均の proxy variant 再結合です。per-trial 再採点ではなく、utility_proxy の本比較完了でもありません。
 
 これらは current Phase 1 の未完了作業ではありません。Phase 2 として扱います。
 
