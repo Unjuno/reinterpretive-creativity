@@ -197,6 +197,39 @@ Interpretation constraints:
 - It does not change `utility_proxy` or the score function.
 - It does not close the full empirical phase.
 
+## Phase 2 utility_proxy comparison minicheck
+
+A utility_proxy comparison minicheck has been recorded in:
+
+- `results/phase2_utility_proxy_comparison.md`
+- `results/phase2_utility_proxy_comparison.csv`
+- `results/phase2_utility_proxy_comparison.json`
+
+This minicheck recombines existing breakdown component means under several utility_proxy variants. It is not per-trial rescoring and does not change the project score function.
+
+Tested variants:
+
+| proxy_variant | density_score | node_coverage_score | weak_connectivity_score | in_out_coverage_score |
+| --- | ---: | ---: | ---: | ---: |
+| current_weighted | 0.35 | 0.25 | 0.25 | 0.15 |
+| uniform_components | 0.25 | 0.25 | 0.25 | 0.25 |
+| density_heavy | 0.50 | 0.20 | 0.20 | 0.10 |
+| coverage_heavy | 0.20 | 0.30 | 0.30 | 0.20 |
+| in_out_heavy | 0.25 | 0.20 | 0.20 | 0.35 |
+
+Key reading:
+
+- tied-win and strict-win groups keep positive recombined-total deltas across all tested variants.
+- aggregate loss cases keep negative recombined-total deltas across all tested variants.
+- in the focused `node_count=4`, `candidate_limit=50` loss group, reinterpretation keeps a positive utility_proxy delta across all tested variants but still has a negative recombined-total delta.
+
+Interpretation constraints:
+
+- This is a group-mean minicheck, not full utility_proxy robustness validation.
+- It does not show that the current utility_proxy is correct.
+- It does not introduce human-value, social-value, aesthetic-value, or scientific-value claims.
+- It does not close the full empirical phase.
+
 ## Current-scope closure
 
 A current-scope closure can be reached after a minimal experimental run, if the project can state:
