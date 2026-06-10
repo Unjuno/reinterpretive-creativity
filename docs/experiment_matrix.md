@@ -175,6 +175,28 @@ Interpretation constraints:
 - It does not close the full empirical phase.
 - `utility_proxy` remains a structural proxy.
 
+## Phase 2 preservation/novelty tradeoff note
+
+A preservation/novelty tradeoff note has been recorded in `results/phase2_preservation_novelty_tradeoff.md`.
+
+This note uses the existing Phase 2 breakdown analysis and does not add a new experiment or score function.
+
+Key observed deltas:
+
+| group | novelty_delta | preservation_delta | utility_proxy_delta | total_score_delta |
+| --- | ---: | ---: | ---: | ---: |
+| reinterpretation_tied_win_all | 0.0172 | 0.0206 | 0.0193 | 0.0461 |
+| reinterpretation_strict_win_all | 0.0489 | 0.0584 | 0.0547 | 0.1310 |
+| reinterpretation_loss_all | -0.2103 | 0.0408 | -0.0157 | -0.1688 |
+| n4_limit50_reinterpretation_loss_all | -0.2051 | 0.0795 | 0.0387 | -0.0959 |
+
+Interpretation constraints:
+
+- This is a descriptive interpretation of existing breakdown measurements.
+- It does not show that novelty is more important than preservation in human judgment.
+- It does not change `utility_proxy` or the score function.
+- It does not close the full empirical phase.
+
 ## Current-scope closure
 
 A current-scope closure can be reached after a minimal experimental run, if the project can state:
