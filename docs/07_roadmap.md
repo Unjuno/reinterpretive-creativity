@@ -43,16 +43,25 @@ Phase 1 の closure は、full empirical phase の完了を意味しません。
 
 目的: current-scope closure で得られた bounded signal を、より広い実験マトリクスで検査する。
 
+状態: mini-start を実施済み。ただし full empirical phase は未完了。
+
 候補作業:
 
-- [ ] candidate_limit 感度分析
+- [x] candidate_limit 感度分析
 - [ ] ランダム生成された教師モデルの追加または再整理
 - [ ] ノイズ注入パターンの追加
 - [ ] 保存度と新規性のトレードオフ整理
 - [ ] 複数 utility_proxy の比較
 - [ ] teacher-model bias の検査
-- [ ] loss-case analysis の拡張
-- [ ] breakdown analysis の拡張
+- [x] loss-case analysis の拡張
+- [x] breakdown analysis の拡張
+
+mini-start 実施済み出力:
+
+- `results/phase2_candidate_limit_sensitivity.md`
+- `results/phase2_loss_cases.md`
+- `results/phase2_breakdown_analysis.md`
+- `docs/phase2_mini_start_summary.md`
 
 これらは current Phase 1 の未完了作業ではありません。Phase 2 として扱います。
 
