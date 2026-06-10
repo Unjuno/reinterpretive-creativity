@@ -175,6 +175,42 @@ Interpretation constraints:
 - It does not close the full empirical phase.
 - `utility_proxy` remains a structural proxy.
 
+## Phase 2 teacher-model bias suite
+
+A small teacher-model bias suite has been recorded in:
+
+- `results/phase2_teacher_bias_suite.md`
+- `results/phase2_teacher_bias_suite.csv`
+- `results/phase2_teacher_bias_suite.json`
+
+Executed suite condition:
+
+| Dimension | Executed levels |
+| --- | --- |
+| seed range | 0-29 |
+| trial count | 30 per condition |
+| graph size | node_count 4 |
+| candidate_limit | 20, 50 |
+| teacher models | fixed_cycle; random_single_positive_edge |
+| methods | random_repair, random_search, local_repair, reinterpretation |
+
+Key results:
+
+| teacher_model | candidate_limit | avg_raw_edges | reinterpretation_mean | tied_win_rate | strict_win_rate | loss_count |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| fixed_cycle | 20 | 5.966667 | 0.436822 | 0.500000 | 0.466667 | 15 |
+| random_single_positive_edge | 20 | 1.000000 | 0.148194 | 0.500000 | 0.000000 | 15 |
+| fixed_cycle | 50 | 5.966667 | 0.455181 | 0.133333 | 0.133333 | 26 |
+| random_single_positive_edge | 50 | 1.000000 | 0.181997 | 0.500000 | 0.000000 | 15 |
+
+Interpretation constraints:
+
+- This suite still uses the existing single-positive-edge random-teacher smoke generator.
+- It is not a general random graph teacher suite.
+- The raw-edge count differs strongly between teacher models, so this does not cleanly isolate teacher-model bias.
+- It does not introduce human-value, social-value, aesthetic-value, or scientific-value claims.
+- It does not close the full empirical phase.
+
 ## Phase 2 preservation/novelty tradeoff note
 
 A preservation/novelty tradeoff note has been recorded in `results/phase2_preservation_novelty_tradeoff.md`.
