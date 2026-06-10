@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "phase": "Phase 2 utility_proxy comparison minicheck",
+    "source": "results/phase2_breakdown_analysis.csv",
+    "method": "Recombine existing component means under multiple utility_proxy variants. This is not per-trial rescoring.",
+    "score_relation": "recombined_total = novelty_distance_mean * preservation_mean * recombined_utility_proxy_mean",
+    "note": "utility_proxy remains a structural proxy, not human value."
+  },
+  "proxy_variants": {
+    "current_weighted": {
+      "density_score": 0.35,
+      "node_coverage_score": 0.25,
+      "weak_connectivity_score": 0.25,
+      "in_out_coverage_score": 0.15
+    },
+    "uniform_components": {
+      "density_score": 0.25,
+      "node_coverage_score": 0.25,
+      "weak_connectivity_score": 0.25,
+      "in_out_coverage_score": 0.25
+    },
+    "density_heavy": {
+      "density_score": 0.50,
+      "node_coverage_score": 0.20,
+      "weak_connectivity_score": 0.20,
+      "in_out_coverage_score": 0.10
+    },
+    "coverage_heavy": {
+      "density_score": 0.20,
+      "node_coverage_score": 0.30,
+      "weak_connectivity_score": 0.30,
+      "in_out_coverage_score": 0.20
+    },
+    "in_out_heavy": {
+      "density_score": 0.25,
+      "node_coverage_score": 0.20,
+      "weak_connectivity_score": 0.20,
+      "in_out_coverage_score": 0.35
+    }
+  },
+  "results": [
+    {"group":"reinterpretation_tied_win_all","proxy_variant":"current_weighted","reinterpretation_utility_proxy":0.958773,"best_baseline_utility_proxy":0.939495,"delta_utility_proxy":0.019278,"reinterpretation_recombined_total":0.681283,"best_baseline_recombined_total":0.638094,"delta_recombined_total":0.043189},
+    {"group":"reinterpretation_tied_win_all","proxy_variant":"uniform_components","reinterpretation_utility_proxy":0.948504,"best_baseline_utility_proxy":0.932805,"delta_utility_proxy":0.015698,"reinterpretation_recombined_total":0.673985,"best_baseline_recombined_total":0.633550,"delta_recombined_total":0.040435},
+    {"group":"reinterpretation_tied_win_all","proxy_variant":"density_heavy","reinterpretation_utility_proxy":0.959214,"best_baseline_utility_proxy":0.934155,"delta_utility_proxy":0.025059,"reinterpretation_recombined_total":0.681595,"best_baseline_recombined_total":0.634466,"delta_recombined_total":0.047129},
+    {"group":"reinterpretation_tied_win_all","proxy_variant":"coverage_heavy","reinterpretation_utility_proxy":0.958333,"best_baseline_utility_proxy":0.944836,"delta_utility_proxy":0.013498,"reinterpretation_recombined_total":0.680970,"best_baseline_recombined_total":0.641721,"delta_recombined_total":0.039249},
+    {"group":"reinterpretation_tied_win_all","proxy_variant":"in_out_heavy","reinterpretation_utility_proxy":0.933539,"best_baseline_utility_proxy":0.917430,"delta_utility_proxy":0.016109,"reinterpretation_recombined_total":0.663351,"best_baseline_recombined_total":0.623107,"delta_recombined_total":0.040245},
+    {"group":"reinterpretation_strict_win_all","proxy_variant":"current_weighted","reinterpretation_utility_proxy":0.929750,"best_baseline_utility_proxy":0.875000,"delta_utility_proxy":0.054750,"reinterpretation_recombined_total":0.604278,"best_baseline_recombined_total":0.495650,"delta_recombined_total":0.108628},
+    {"group":"reinterpretation_strict_win_all","proxy_variant":"uniform_components","reinterpretation_utility_proxy":0.926250,"best_baseline_utility_proxy":0.881667,"delta_utility_proxy":0.044583,"reinterpretation_recombined_total":0.602003,"best_baseline_recombined_total":0.499427,"delta_recombined_total":0.102577},
+    {"group":"reinterpretation_strict_win_all","proxy_variant":"density_heavy","reinterpretation_utility_proxy":0.919833,"best_baseline_utility_proxy":0.848667,"delta_utility_proxy":0.071167,"reinterpretation_recombined_total":0.597833,"best_baseline_recombined_total":0.480733,"delta_recombined_total":0.117100},
+    {"group":"reinterpretation_strict_win_all","proxy_variant":"coverage_heavy","reinterpretation_utility_proxy":0.939667,"best_baseline_utility_proxy":0.901333,"delta_utility_proxy":0.038333,"reinterpretation_recombined_total":0.610723,"best_baseline_recombined_total":0.510567,"delta_recombined_total":0.100157},
+    {"group":"reinterpretation_strict_win_all","proxy_variant":"in_out_heavy","reinterpretation_utility_proxy":0.911083,"best_baseline_utility_proxy":0.865333,"delta_utility_proxy":0.045750,"reinterpretation_recombined_total":0.592146,"best_baseline_recombined_total":0.490174,"delta_recombined_total":0.101972},
+    {"group":"reinterpretation_loss_all","proxy_variant":"current_weighted","reinterpretation_utility_proxy":0.885417,"best_baseline_utility_proxy":0.901148,"delta_utility_proxy":-0.015731,"reinterpretation_recombined_total":0.471429,"best_baseline_recombined_total":0.631018,"delta_recombined_total":-0.159589},
+    {"group":"reinterpretation_loss_all","proxy_variant":"uniform_components","reinterpretation_utility_proxy":0.895196,"best_baseline_utility_proxy":0.910077,"delta_utility_proxy":-0.014881,"reinterpretation_recombined_total":0.476635,"best_baseline_recombined_total":0.637270,"delta_recombined_total":-0.160635},
+    {"group":"reinterpretation_loss_all","proxy_variant":"density_heavy","reinterpretation_utility_proxy":0.855697,"best_baseline_utility_proxy":0.874575,"delta_utility_proxy":-0.018878,"reinterpretation_recombined_total":0.455605,"best_baseline_recombined_total":0.612410,"delta_recombined_total":-0.156806},
+    {"group":"reinterpretation_loss_all","proxy_variant":"coverage_heavy","reinterpretation_utility_proxy":0.915136,"best_baseline_utility_proxy":0.927721,"delta_utility_proxy":-0.012585,"reinterpretation_recombined_total":0.487252,"best_baseline_recombined_total":0.649626,"delta_recombined_total":-0.162373},
+    {"group":"reinterpretation_loss_all","proxy_variant":"in_out_heavy","reinterpretation_utility_proxy":0.880145,"best_baseline_utility_proxy":0.896896,"delta_utility_proxy":-0.016752,"reinterpretation_recombined_total":0.468622,"best_baseline_recombined_total":0.628041,"delta_recombined_total":-0.159419},
+    {"group":"n4_limit50_reinterpretation_loss_all","proxy_variant":"current_weighted","reinterpretation_utility_proxy":0.894712,"best_baseline_utility_proxy":0.856010,"delta_utility_proxy":0.038702,"reinterpretation_recombined_total":0.460415,"best_baseline_recombined_total":0.557713,"delta_recombined_total":-0.097298},
+    {"group":"n4_limit50_reinterpretation_loss_all","proxy_variant":"uniform_components","reinterpretation_utility_proxy":0.901442,"best_baseline_utility_proxy":0.878606,"delta_utility_proxy":0.022837,"reinterpretation_recombined_total":0.463878,"best_baseline_recombined_total":0.572435,"delta_recombined_total":-0.108556},
+    {"group":"n4_limit50_reinterpretation_loss_all","proxy_variant":"density_heavy","reinterpretation_utility_proxy":0.870192,"best_baseline_utility_proxy":0.809135,"delta_utility_proxy":0.061058,"reinterpretation_recombined_total":0.447797,"best_baseline_recombined_total":0.527172,"delta_recombined_total":-0.079375},
+    {"group":"n4_limit50_reinterpretation_loss_all","proxy_variant":"coverage_heavy","reinterpretation_utility_proxy":0.919231,"best_baseline_utility_proxy":0.902885,"delta_utility_proxy":0.016346,"reinterpretation_recombined_total":0.473032,"best_baseline_recombined_total":0.588253,"delta_recombined_total":-0.115221},
+    {"group":"n4_limit50_reinterpretation_loss_all","proxy_variant":"in_out_heavy","reinterpretation_utility_proxy":0.887019,"best_baseline_utility_proxy":0.865625,"delta_utility_proxy":0.021394,"reinterpretation_recombined_total":0.456456,"best_baseline_recombined_total":0.563977,"delta_recombined_total":-0.107521},
+    {"group":"n4_limit50_reinterpretation_tied_win_all","proxy_variant":"current_weighted","reinterpretation_utility_proxy":0.784375,"best_baseline_utility_proxy":0.796875,"delta_utility_proxy":-0.012500,"reinterpretation_recombined_total":0.460665,"best_baseline_recombined_total":0.445475,"delta_recombined_total":0.015189},
+    {"group":"n4_limit50_reinterpretation_tied_win_all","proxy_variant":"uniform_components","reinterpretation_utility_proxy":0.828125,"best_baseline_utility_proxy":0.828125,"delta_utility_proxy":0.000000,"reinterpretation_recombined_total":0.486359,"best_baseline_recombined_total":0.462945,"delta_recombined_total":0.023414},
+    {"group":"n4_limit50_reinterpretation_tied_win_all","proxy_variant":"density_heavy","reinterpretation_utility_proxy":0.706250,"best_baseline_utility_proxy":0.731250,"delta_utility_proxy":-0.025000,"reinterpretation_recombined_total":0.414782,"best_baseline_recombined_total":0.408789,"delta_recombined_total":0.005993},
+    {"group":"n4_limit50_reinterpretation_tied_win_all","proxy_variant":"coverage_heavy","reinterpretation_utility_proxy":0.862500,"best_baseline_utility_proxy":0.862500,"delta_utility_proxy":0.000000,"reinterpretation_recombined_total":0.506548,"best_baseline_recombined_total":0.482161,"delta_recombined_total":0.024386},
+    {"group":"n4_limit50_reinterpretation_tied_win_all","proxy_variant":"in_out_heavy","reinterpretation_utility_proxy":0.815625,"best_baseline_utility_proxy":0.809375,"delta_utility_proxy":0.006250,"reinterpretation_recombined_total":0.479018,"best_baseline_recombined_total":0.452463,"delta_recombined_total":0.026555}
+  ]
+}
