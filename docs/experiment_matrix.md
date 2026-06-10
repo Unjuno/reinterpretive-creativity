@@ -80,6 +80,40 @@ It should run:
 
 This is enough to decide whether the model has bounded empirical traction before expanding the matrix.
 
+## Phase 2 mini-start execution
+
+A small Phase 2 mini-start has now been run as an additional post-Phase-1 check, not as full empirical phase closure.
+
+Executed conditions:
+
+| Dimension | Executed levels |
+| --- | --- |
+| seed range | 0-29 |
+| trial count | 30 per condition |
+| graph size | node_count 3, 4 |
+| candidate_limit | 10, 20, 50, 100, 200, 500 |
+| methods | random_repair, random_search, local_repair, reinterpretation |
+
+Recorded outputs:
+
+- `results/phase2_candidate_limit_sensitivity.md`
+- `results/phase2_candidate_limit_sensitivity.csv`
+- `results/phase2_candidate_limit_sensitivity.json`
+- `results/phase2_loss_cases.md`
+- `results/phase2_loss_cases.csv`
+- `results/phase2_loss_cases.json`
+- `results/phase2_breakdown_analysis.md`
+- `results/phase2_breakdown_analysis.csv`
+- `results/phase2_breakdown_analysis.json`
+- `docs/phase2_mini_start_summary.md`
+
+Interpretation constraints:
+
+- This mini-start does not show that reinterpretation search is creativity.
+- It only records how structural proxy scores change under the listed conditions.
+- Breakdown differences are descriptive measurement results, not causal explanations.
+- Phase 1 remains closed for the current scope.
+
 ## Current-scope closure
 
 A current-scope closure can be reached after a minimal experimental run, if the project can state:
