@@ -1,5 +1,7 @@
 # 再解釈型創造性モデル
 
+English public overview: [`README_en.md`](README_en.md)
+
 このリポジトリは、**再解釈型創造性** の一部を扱う小さな形式モデル・シミュレーション実験です。
 
 扱う対象は、創造性全体ではありません。ここでは、主体の内部ワールドモデルに生じた不整合が、別の整合的な構造へ再解釈される場合を、人工グラフと構造的 proxy によって限定的に扱います。
@@ -132,6 +134,9 @@ python -m unittest discover -s tests
 - [`docs/experiment_matrix.md`](docs/experiment_matrix.md): 実験マトリクス
 - [`docs/phase1_closure_summary.md`](docs/phase1_closure_summary.md): 第1フェーズ終了まとめ
 - [`docs/phase1_closure_summary_en.md`](docs/phase1_closure_summary_en.md): 英語版終了まとめ
+- [`docs/phase2_analysis_observations.md`](docs/phase2_analysis_observations.md): Phase 2 横断解析
+- [`docs/phase2_interpretive_note.md`](docs/phase2_interpretive_note.md): Phase 2 解釈ノート
+- [`docs/phase2_interim_summary.md`](docs/phase2_interim_summary.md): Phase 2 中間まとめ
 
 ## 初期文書
 
